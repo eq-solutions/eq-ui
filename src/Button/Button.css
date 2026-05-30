@@ -1,0 +1,156 @@
+/*
+ * @eq-solutions/ui — Button
+ *
+ * All colours, radii, spacing, and motion reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ *
+ * The consuming app is responsible for importing @eq-solutions/tokens/tokens.css
+ * so the custom properties are defined on :root.
+ */
+
+.eq-btn {
+  /* Layout */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--eq-space-2);
+
+  /* Type */
+  font-family: var(--eq-font-stack);
+  font-weight: var(--eq-weight-semi);
+  line-height: 1;
+  white-space: nowrap;
+
+  /* Shape */
+  border-radius: var(--eq-radius-input);
+  border: var(--eq-border-width) solid transparent;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: background-color var(--eq-duration-default) var(--eq-ease),
+              border-color var(--eq-duration-default) var(--eq-ease),
+              color var(--eq-duration-default) var(--eq-ease),
+              opacity var(--eq-duration-default) var(--eq-ease);
+
+  /* Focus */
+  outline: none;
+}
+
+.eq-btn:focus-visible {
+  box-shadow: var(--eq-focus-ring);
+  outline-offset: var(--eq-focus-offset);
+}
+
+.eq-btn:disabled,
+.eq-btn[aria-busy="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Sizes ── */
+
+.eq-btn--sm {
+  height: 32px;
+  padding: 0 var(--eq-space-3);
+  font-size: var(--eq-text-xs);
+}
+
+.eq-btn--md {
+  height: 40px;
+  padding: 0 var(--eq-space-4);
+  font-size: var(--eq-text-sm);
+}
+
+.eq-btn--lg {
+  height: 48px;
+  padding: 0 var(--eq-space-6);
+  font-size: var(--eq-text-base);
+}
+
+/* ── Variants ── */
+
+/* primary — filled sky, white label */
+.eq-btn--primary {
+  background-color: var(--eq-sky);
+  border-color: var(--eq-sky);
+  color: var(--eq-white);
+}
+
+.eq-btn--primary:hover:not(:disabled):not([aria-busy="true"]) {
+  background-color: var(--eq-deep);
+  border-color: var(--eq-deep);
+}
+
+/* secondary — white with deep border + label */
+.eq-btn--secondary {
+  background-color: var(--eq-white);
+  border-color: var(--eq-deep);
+  color: var(--eq-deep);
+}
+
+.eq-btn--secondary:hover:not(:disabled):not([aria-busy="true"]) {
+  background-color: var(--eq-ice);
+}
+
+/* ghost — no border, ink label, transparent background */
+.eq-btn--ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--eq-ink);
+}
+
+.eq-btn--ghost:hover:not(:disabled):not([aria-busy="true"]) {
+  background-color: var(--eq-ice);
+}
+
+/* danger — error palette */
+.eq-btn--danger {
+  background-color: var(--eq-error-bg);
+  border-color: var(--eq-error-text);
+  color: var(--eq-error-text);
+}
+
+.eq-btn--danger:hover:not(:disabled):not([aria-busy="true"]) {
+  background-color: var(--eq-error-text);
+  color: var(--eq-white);
+}
+
+/* ── Loading overlay ── */
+
+.eq-btn__loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eq-btn__spinner {
+  animation: eq-btn-spin var(--eq-duration-spinner) linear infinite;
+}
+
+.eq-btn__spinner--sm {
+  width: 14px;
+  height: 14px;
+}
+
+.eq-btn__spinner--md {
+  width: 16px;
+  height: 16px;
+}
+
+.eq-btn__spinner--lg {
+  width: 20px;
+  height: 20px;
+}
+
+.eq-btn__content--hidden {
+  visibility: hidden;
+}
+
+@keyframes eq-btn-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
