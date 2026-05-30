@@ -94,10 +94,12 @@
   background-color: var(--eq-ice);
 }
 
-/* ghost — no border, ink label, transparent background */
+/* ghost — subtle 1px border, ink label, transparent background.
+   (v1.0.1: border restored to match the apps' prior .eq-btn-ghost and give
+   cross-app parity — PR eq-shell#73 review.) */
 .eq-btn--ghost {
   background-color: transparent;
-  border-color: transparent;
+  border-color: var(--eq-gray-200);
   color: var(--eq-ink);
 }
 
