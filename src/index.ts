@@ -9,3 +9,16 @@
 // Button
 export { Button } from './Button/Button'
 export type { ButtonProps, ButtonVariant, ButtonSize } from './Button/Button'
+
+// Skeleton
+export { Skeleton, SkeletonRows, SkeletonCards } from './Skeleton/Skeleton'
+export type {
+  SkeletonProps,
+  SkeletonShape,
+  SkeletonRowsProps,
+  SkeletonCardsProps,
+} from './Skeleton/Skeleton'
+
+// Table
+export { Table } from './Table/Table'
+export type { TableProps, TableColumn, TableColumnDef } from './Table/Table'

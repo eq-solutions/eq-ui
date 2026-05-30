@@ -32,6 +32,14 @@
       "types": "./src/Button/Button.tsx",
       "default": "./src/Button/Button.tsx"
     },
+    "./Skeleton": {
+      "types": "./src/Skeleton/Skeleton.tsx",
+      "default": "./src/Skeleton/Skeleton.tsx"
+    },
+    "./Table": {
+      "types": "./src/Table/Table.tsx",
+      "default": "./src/Table/Table.tsx"
+    },
     "./package.json": "./package.json"
   },
   "files": [

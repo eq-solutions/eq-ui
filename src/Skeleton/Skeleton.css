@@ -1,0 +1,81 @@
+/*
+ * @eq-solutions/ui — Skeleton
+ *
+ * All colours, radii, spacing, and motion reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ *
+ * The consuming app is responsible for importing @eq-solutions/tokens/tokens.css
+ * so the custom properties are defined on :root.
+ */
+
+/* ── Base block ── */
+
+.eq-skeleton {
+  display: block;
+  background-color: var(--eq-gray-200);
+  animation: eq-skeleton-pulse var(--eq-duration-default, 1.4s) ease-in-out infinite;
+}
+
+/* ── Shapes ── */
+
+/* text — single line of text height */
+.eq-skeleton--text {
+  height: var(--eq-space-4, 1rem);
+  border-radius: var(--eq-radius-sm, 4px);
+  width: 100%;
+}
+
+/* line — thinner, pill-shaped (sub-text, captions) */
+.eq-skeleton--line {
+  height: var(--eq-space-2, 0.5rem);
+  border-radius: var(--eq-radius-full, 9999px);
+  width: 100%;
+}
+
+/* circle — avatar / icon placeholder */
+.eq-skeleton--circle {
+  border-radius: var(--eq-radius-full, 9999px);
+  /* width + height supplied by consumer via className or inline style */
+}
+
+/* card — full card placeholder block */
+.eq-skeleton--card {
+  height: 8rem;
+  width: 100%;
+  border-radius: var(--eq-radius-card, 8px);
+}
+
+/* ── Composite: SkeletonRows ── */
+
+.eq-skeleton-rows__row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--eq-gray-100);
+  padding: var(--eq-space-3) var(--eq-space-4);
+  gap: var(--eq-space-4);
+}
+
+/* ── Composite: SkeletonCards ── */
+
+.eq-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--eq-space-4);
+}
+
+.eq-skeleton-cards__card {
+  border: 1px solid var(--eq-gray-200);
+  background-color: var(--eq-white);
+  border-radius: var(--eq-radius-card, 8px);
+  padding: var(--eq-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--eq-space-3);
+}
+
+/* ── Keyframe ── */
+
+@keyframes eq-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}

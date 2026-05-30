@@ -1,0 +1,151 @@
+/*
+ * @eq-solutions/ui — Table
+ *
+ * All colours, radii, spacing, and motion reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ *
+ * The consuming app is responsible for importing @eq-solutions/tokens/tokens.css
+ * so the custom properties are defined on :root.
+ */
+
+/* ── Wrapper ── */
+
+.eq-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--eq-border-width) solid var(--eq-gray-200);
+  border-radius: var(--eq-radius-card, 8px);
+  background-color: var(--eq-white);
+  font-size: var(--eq-text-sm);
+}
+
+/* ── Table element ── */
+
+.eq-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* ── Header ── */
+
+.eq-table thead {
+  background-color: var(--eq-ice);
+}
+
+.eq-table th {
+  padding: var(--eq-space-2) var(--eq-space-4);
+  text-align: left;
+  font-size: var(--eq-text-xs);
+  font-weight: var(--eq-weight-bold);
+  color: var(--eq-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.eq-table th[data-sortable="true"] {
+  cursor: pointer;
+}
+
+.eq-table th[data-sortable="true"]:hover {
+  background-color: var(--eq-ice);
+  filter: brightness(0.95);
+}
+
+.eq-table__sort-icon {
+  display: inline-block;
+  margin-left: var(--eq-space-1);
+  opacity: 0.4;
+  font-size: 0.625rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.eq-table__sort-icon--active {
+  opacity: 1;
+  color: var(--eq-sky);
+}
+
+/* ── Filter row ── */
+
+.eq-table__filter-row {
+  background-color: var(--eq-white);
+  border-top: var(--eq-border-width) solid var(--eq-gray-100);
+}
+
+.eq-table__filter-row th {
+  padding: var(--eq-space-1) var(--eq-space-4) var(--eq-space-2);
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.eq-table__filter-input,
+.eq-table__filter-select {
+  width: 100%;
+  padding: var(--eq-space-1) var(--eq-space-2);
+  font-size: var(--eq-text-xs);
+  color: var(--eq-ink);
+  background-color: var(--eq-gray-50);
+  border: var(--eq-border-width) solid var(--eq-gray-200);
+  border-radius: var(--eq-radius-sm, 4px);
+  font-family: var(--eq-font-stack);
+  outline: none;
+}
+
+.eq-table__filter-input:focus,
+.eq-table__filter-select:focus {
+  border-color: var(--eq-sky);
+}
+
+/* ── Body ── */
+
+.eq-table tbody tr {
+  border-top: var(--eq-border-width) solid var(--eq-gray-100);
+  transition: background-color var(--eq-duration-fast, 80ms) linear;
+}
+
+.eq-table tbody tr:hover {
+  background-color: var(--eq-gray-50);
+}
+
+.eq-table tbody tr[data-selected="true"] {
+  background-color: var(--eq-ice);
+}
+
+.eq-table tbody tr[data-clickable="true"] {
+  cursor: pointer;
+}
+
+.eq-table td {
+  padding: var(--eq-space-3) var(--eq-space-4);
+  color: var(--eq-ink);
+  vertical-align: middle;
+}
+
+/* ── Empty state ── */
+
+.eq-table__empty {
+  padding: var(--eq-space-6) var(--eq-space-4);
+  text-align: center;
+  color: var(--eq-grey);
+  font-size: var(--eq-text-sm);
+}
+
+/* ── Checkbox column ── */
+
+.eq-table__checkbox-cell {
+  width: 2.5rem;
+  padding-left: var(--eq-space-3);
+  padding-right: var(--eq-space-3);
+}
+
+.eq-table__checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--eq-radius-sm, 4px);
+  border: var(--eq-border-width) solid var(--eq-gray-300);
+  accent-color: var(--eq-sky);
+  cursor: pointer;
+}
