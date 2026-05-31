@@ -1,0 +1,59 @@
+/*
+ * @eq-solutions/ui — Modal / ConfirmDialog
+ *
+ * Floating UI — shadow is permitted here. All colours, radii, spacing, motion
+ * reference --eq-* custom properties from @eq-solutions/tokens.
+ */
+
+.eq-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--eq-space-4);
+  background-color: var(--eq-overlay, rgba(26, 26, 46, 0.45));
+  font-family: var(--eq-font-stack);
+}
+
+.eq-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - var(--eq-space-8));
+  overflow-y: auto;
+  background-color: var(--eq-white);
+  border-radius: var(--eq-radius-card);
+  box-shadow: var(--eq-shadow-lg);
+  color: var(--eq-ink);
+  outline: none;
+}
+
+.eq-modal__head {
+  padding: var(--eq-space-5) var(--eq-space-5) 0;
+}
+
+.eq-modal__title {
+  margin: 0;
+  font-size: var(--eq-text-xl);
+  font-weight: var(--eq-weight-bold);
+  letter-spacing: var(--eq-tracking-tight);
+}
+
+.eq-modal__desc {
+  margin: var(--eq-space-2) 0 0;
+  font-size: var(--eq-text-sm);
+  line-height: var(--eq-body-line-height);
+  color: var(--eq-gray-500);
+}
+
+.eq-modal__body {
+  padding: var(--eq-space-4) var(--eq-space-5);
+}
+
+.eq-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--eq-space-2);
+  padding: var(--eq-space-5);
+}

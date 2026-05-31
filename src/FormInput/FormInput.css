@@ -1,0 +1,74 @@
+/*
+ * @eq-solutions/ui — FormInput
+ *
+ * All colours, radii, spacing, and motion reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--eq-space-2);
+  font-family: var(--eq-font-stack);
+}
+
+.eq-field__label {
+  font-size: var(--eq-label-size);
+  font-weight: var(--eq-label-weight);
+  letter-spacing: var(--eq-tracking-label);
+  text-transform: uppercase;
+  color: var(--eq-grey);
+}
+
+.eq-field__input {
+  height: 40px;
+  padding: 0 var(--eq-space-3);
+  border: var(--eq-border-width) solid var(--eq-input-border-color);
+  border-radius: var(--eq-radius-input);
+  font-family: inherit;
+  font-size: var(--eq-text-sm);
+  color: var(--eq-ink);
+  background-color: var(--eq-white);
+  outline: none;
+  transition: border-color var(--eq-duration-default) var(--eq-ease),
+              box-shadow var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-field__input::placeholder {
+  color: var(--eq-gray-400);
+}
+
+.eq-field__input:focus-visible {
+  border-color: var(--eq-deep);
+  box-shadow: var(--eq-focus-ring);
+}
+
+.eq-field__input--error {
+  border-color: var(--eq-error-text);
+}
+
+.eq-field__input--error:focus-visible {
+  border-color: var(--eq-error-text);
+  box-shadow: 0 0 0 2px var(--eq-error-bg);
+}
+
+.eq-field[data-disabled] .eq-field__label {
+  opacity: 0.5;
+}
+
+.eq-field__input:disabled {
+  background-color: var(--eq-gray-100);
+  color: var(--eq-gray-400);
+  cursor: not-allowed;
+}
+
+.eq-field__hint {
+  font-size: var(--eq-text-xs);
+  color: var(--eq-gray-500);
+}
+
+.eq-field__error {
+  font-size: var(--eq-text-xs);
+  color: var(--eq-error-text);
+  font-weight: var(--eq-weight-medium);
+}

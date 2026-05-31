@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { Skeleton } from '../Skeleton/Skeleton'
 import './Table.css'
 
 // ── Column definition ──────────────────────────────────────────────────────
@@ -73,6 +74,13 @@ export interface TableProps<T> {
   onSelectionChange?: (ids: Set<string>) => void
   /** Fired when a data row is clicked. */
   onRowClick?: (row: T) => void
+  /**
+   * When `true`, renders skeleton placeholder rows instead of data — use while
+   * the first page of rows is loading. Sorting/filter controls are suppressed.
+   */
+  loading?: boolean
+  /** Number of skeleton rows to show while `loading`. Defaults to `5`. */
+  loadingRows?: number
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -123,6 +131,8 @@ export function Table<T>({
   selectedIds,
   onSelectionChange,
   onRowClick,
+  loading = false,
+  loadingRows = 5,
 }: TableProps<T>) {
   // ── Sort state ─────────────────────────────────────────────────────
   const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(
@@ -288,7 +298,7 @@ export function Table<T>({
           </tr>
 
           {/* Filter row */}
-          {hasFilters && (
+          {hasFilters && !loading && (
             <tr className="eq-table__filter-row">
               {selectable && <th className="eq-table__checkbox-cell" />}
               {columns.map(col => (
@@ -325,7 +335,21 @@ export function Table<T>({
         </thead>
 
         <tbody>
-          {sortedRows.length === 0 ? (
+          {loading ? (
+            Array.from({ length: loadingRows }).map((_, rowIdx) => (
+              <tr key={`skeleton-${rowIdx}`} aria-hidden="true">
+                {selectable && <td className="eq-table__checkbox-cell" />}
+                {columns.map((col, colIdx) => (
+                  <td
+                    key={col.key}
+                    style={{ textAlign: col.align ?? 'left', width: col.width }}
+                  >
+                    <Skeleton shape="text" width={colIdx === 0 ? '75%' : '50%'} />
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : sortedRows.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length + (selectable ? 1 : 0)}

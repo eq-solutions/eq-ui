@@ -148,6 +148,18 @@
   height: 20px;
 }
 
+.eq-btn__content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+}
+
+.eq-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
 .eq-btn__content--hidden {
   visibility: hidden;
 }

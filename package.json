@@ -1,10 +1,10 @@
 {
   "name": "@eq-solutions/ui",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "CDC Solutions Pty Ltd",
-  "description": "Canonical EQ shared React components (Button, Skeleton, Table, …) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
+  "description": "Canonical EQ shared React components (Button, FormInput, StatusBadge, KindPill, Card, Modal, Tabs, Toast, Skeleton, Table) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
   "type": "module",
   "repository": {
     "type": "git",
@@ -32,6 +32,38 @@
       "types": "./src/Button/Button.tsx",
       "default": "./src/Button/Button.tsx"
     },
+    "./FormInput": {
+      "types": "./src/FormInput/FormInput.tsx",
+      "default": "./src/FormInput/FormInput.tsx"
+    },
+    "./StatusBadge": {
+      "types": "./src/StatusBadge/StatusBadge.tsx",
+      "default": "./src/StatusBadge/StatusBadge.tsx"
+    },
+    "./KindPill": {
+      "types": "./src/KindPill/KindPill.tsx",
+      "default": "./src/KindPill/KindPill.tsx"
+    },
+    "./Card": {
+      "types": "./src/Card/Card.tsx",
+      "default": "./src/Card/Card.tsx"
+    },
+    "./Modal": {
+      "types": "./src/Modal/Modal.tsx",
+      "default": "./src/Modal/Modal.tsx"
+    },
+    "./ConfirmDialog": {
+      "types": "./src/Modal/ConfirmDialog.tsx",
+      "default": "./src/Modal/ConfirmDialog.tsx"
+    },
+    "./Tabs": {
+      "types": "./src/Tabs/Tabs.tsx",
+      "default": "./src/Tabs/Tabs.tsx"
+    },
+    "./Toast": {
+      "types": "./src/Toast/Toast.tsx",
+      "default": "./src/Toast/Toast.tsx"
+    },
     "./Skeleton": {
       "types": "./src/Skeleton/Skeleton.tsx",
       "default": "./src/Skeleton/Skeleton.tsx"
@@ -53,7 +85,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.0.0"
+    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.2.0"
   },
   "peerDependencies": {
     "react": ">=18",

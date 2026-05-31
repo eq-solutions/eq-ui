@@ -1,0 +1,50 @@
+/*
+ * @eq-solutions/ui — KindPill
+ *
+ * All colours, radii, spacing reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  padding: 3px var(--eq-space-2);
+  border-radius: var(--eq-radius-chip);
+  border: var(--eq-border-width) solid;
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-xs);
+  font-weight: var(--eq-weight-bold);
+  white-space: nowrap;
+}
+
+.eq-kind__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+/* preventive — sky/ice, scheduled care */
+.eq-kind--preventive {
+  background-color: var(--eq-ice);
+  color: var(--eq-deep);
+  border-color: var(--eq-sky);
+}
+.eq-kind--preventive .eq-kind__dot { background-color: var(--eq-sky); }
+
+/* corrective — neutral grey, reactive fix */
+.eq-kind--corrective {
+  background-color: var(--eq-gray-100);
+  color: var(--eq-gray-600);
+  border-color: var(--eq-gray-200);
+}
+.eq-kind--corrective .eq-kind__dot { background-color: var(--eq-gray-500); }
+
+/* inspection — white with deep border, audit */
+.eq-kind--inspection {
+  background-color: var(--eq-white);
+  color: var(--eq-ink);
+  border-color: var(--eq-gray-300);
+}
+.eq-kind--inspection .eq-kind__dot { background-color: var(--eq-gray-600); }

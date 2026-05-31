@@ -1,0 +1,120 @@
+/*
+ * @eq-solutions/ui — Toast
+ *
+ * Floating UI — shadow is permitted here. All colours, radii, spacing reference
+ * --eq-* custom properties from @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-toast__region {
+  position: fixed;
+  bottom: var(--eq-space-5);
+  right: var(--eq-space-5);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--eq-space-2);
+  max-width: min(380px, calc(100vw - var(--eq-space-8)));
+  font-family: var(--eq-font-stack);
+}
+
+.eq-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--eq-space-3);
+  padding: var(--eq-space-3) var(--eq-space-4);
+  border-radius: var(--eq-radius-card);
+  background-color: var(--eq-white);
+  border: var(--eq-border-width) solid var(--eq-border-color);
+  box-shadow: var(--eq-shadow-lg);
+  color: var(--eq-ink);
+}
+
+.eq-toast__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--eq-radius-input);
+}
+
+.eq-toast__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.eq-toast--ok .eq-toast__icon {
+  background-color: var(--eq-success-bg);
+  color: var(--eq-success-text);
+}
+.eq-toast--warn .eq-toast__icon {
+  background-color: var(--eq-warning-bg);
+  color: var(--eq-warning-text);
+}
+.eq-toast--err .eq-toast__icon {
+  background-color: var(--eq-error-bg);
+  color: var(--eq-error-text);
+}
+.eq-toast--info .eq-toast__icon {
+  background-color: var(--eq-ice);
+  color: var(--eq-deep);
+}
+
+.eq-toast__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.eq-toast__title {
+  font-size: var(--eq-text-sm);
+  font-weight: var(--eq-weight-semi);
+}
+
+.eq-toast__message {
+  margin-top: 2px;
+  font-size: var(--eq-text-xs);
+  color: var(--eq-gray-500);
+}
+
+.eq-toast__close {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--eq-gray-400);
+  border-radius: var(--eq-radius-chip);
+  cursor: pointer;
+  transition: color var(--eq-duration-default) var(--eq-ease),
+              background-color var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-toast__close:hover {
+  color: var(--eq-ink);
+  background-color: var(--eq-gray-100);
+}
+
+.eq-toast__close:focus-visible {
+  outline: 2px solid var(--eq-sky);
+  outline-offset: 1px;
+}
+
+.eq-toast__close svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .eq-toast {
+    animation: eq-toast-in var(--eq-duration-drawer) var(--eq-ease);
+  }
+  @keyframes eq-toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}

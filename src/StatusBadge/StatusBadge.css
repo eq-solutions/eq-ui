@@ -1,0 +1,62 @@
+/*
+ * @eq-solutions/ui — StatusBadge
+ *
+ * All colours, radii, spacing reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  padding: 3px var(--eq-space-3);
+  border-radius: var(--eq-radius-pill);
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-xs);
+  font-weight: var(--eq-weight-bold);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.eq-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+/* open — ice surface, deep label, sky dot */
+.eq-badge--open {
+  background-color: var(--eq-ice);
+  color: var(--eq-deep);
+}
+.eq-badge--open .eq-badge__dot { background-color: var(--eq-sky); }
+
+/* in-progress — warning palette */
+.eq-badge--in-progress {
+  background-color: var(--eq-warning-bg);
+  color: var(--eq-warning-text);
+}
+.eq-badge--in-progress .eq-badge__dot { background-color: var(--eq-warning-text); }
+
+/* overdue — error palette */
+.eq-badge--overdue {
+  background-color: var(--eq-error-bg);
+  color: var(--eq-error-text);
+}
+.eq-badge--overdue .eq-badge__dot { background-color: var(--eq-error-text); }
+
+/* closed — success palette */
+.eq-badge--closed {
+  background-color: var(--eq-success-bg);
+  color: var(--eq-success-text);
+}
+.eq-badge--closed .eq-badge__dot { background-color: var(--eq-success-text); }
+
+/* await — neutral / waiting */
+.eq-badge--await {
+  background-color: var(--eq-gray-100);
+  color: var(--eq-gray-600);
+}
+.eq-badge--await .eq-badge__dot { background-color: var(--eq-gray-500); }
