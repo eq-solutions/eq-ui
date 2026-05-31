@@ -16,6 +16,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * gives the user visible feedback.
    */
   loading?: boolean
+  /**
+   * Optional leading icon, rendered before the label. Pass a Lucide icon
+   * (the EQ icon family) sized 16px — e.g. `icon={<Plus size={16} />}`.
+   * Decorative: marked `aria-hidden`. For an icon-only button, also pass
+   * `aria-label`.
+   */
+  icon?: React.ReactNode
 }
 
 /**
@@ -38,6 +45,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * // async loading state
  * <Button loading={isPending}>Save changes</Button>
  *
+ * // leading icon (Lucide)
+ * <Button icon={<Plus size={16} />}>New work order</Button>
+ *
  * // danger confirmation
  * <Button variant="danger" onClick={handleDelete}>Delete</Button>
  */
@@ -47,6 +57,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'primary',
       size = 'md',
       loading = false,
+      icon,
       disabled,
       className,
       children,
@@ -98,7 +109,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             </svg>
           </span>
         )}
-        <span className={loading ? 'eq-btn__content--hidden' : undefined}>
+        <span
+          className={`eq-btn__content${loading ? ' eq-btn__content--hidden' : ''}`}
+        >
+          {icon != null && (
+            <span className="eq-btn__icon" aria-hidden="true">
+              {icon}
+            </span>
+          )}
           {children}
         </span>
       </button>

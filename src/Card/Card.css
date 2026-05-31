@@ -1,0 +1,44 @@
+/*
+ * @eq-solutions/ui — Card
+ *
+ * Flat surface — no shadow. All colours, radii, spacing reference --eq-*
+ * custom properties from @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-card {
+  background-color: var(--eq-white);
+  border: var(--eq-border-width) solid var(--eq-border-color);
+  border-radius: var(--eq-radius-card);
+  font-family: var(--eq-font-stack);
+  color: var(--eq-ink);
+  overflow: hidden;
+}
+
+.eq-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--eq-space-3);
+  padding: var(--eq-space-4) var(--eq-space-5);
+  border-bottom: var(--eq-border-width) solid var(--eq-border-light, var(--eq-gray-100));
+}
+
+.eq-card__title {
+  margin: 0;
+  font-size: var(--eq-text-lg);
+  font-weight: var(--eq-weight-semi);
+  letter-spacing: var(--eq-tracking-tight);
+}
+
+.eq-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  flex: 0 0 auto;
+}
+
+/* Body padding tiers */
+.eq-card--pad-none  .eq-card__body { padding: 0; }
+.eq-card--pad-sm    .eq-card__body { padding: var(--eq-space-3); }
+.eq-card--pad-md    .eq-card__body { padding: var(--eq-space-5); }
+.eq-card--pad-lg    .eq-card__body { padding: var(--eq-space-6); }

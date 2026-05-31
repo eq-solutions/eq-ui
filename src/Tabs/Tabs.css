@@ -1,0 +1,70 @@
+/*
+ * @eq-solutions/ui — Tabs
+ *
+ * All colours, spacing, motion reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: var(--eq-border-width) solid var(--eq-border-color);
+  font-family: var(--eq-font-stack);
+}
+
+.eq-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  padding: var(--eq-space-2) var(--eq-space-4);
+  margin-bottom: calc(-1 * var(--eq-border-width));
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: inherit;
+  font-size: var(--eq-text-sm);
+  font-weight: var(--eq-weight-semi);
+  color: var(--eq-gray-500);
+  cursor: pointer;
+  transition: color var(--eq-duration-default) var(--eq-ease),
+              border-color var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-tabs__tab:hover:not(:disabled) {
+  color: var(--eq-ink);
+}
+
+.eq-tabs__tab:focus-visible {
+  outline: 2px solid var(--eq-sky);
+  outline-offset: -2px;
+  border-radius: var(--eq-radius-chip);
+}
+
+.eq-tabs__tab--active {
+  color: var(--eq-deep);
+  border-bottom-color: var(--eq-sky);
+}
+
+.eq-tabs__tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.eq-tabs__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--eq-radius-pill);
+  background-color: var(--eq-gray-100);
+  color: var(--eq-gray-600);
+  font-size: var(--eq-text-xs);
+  font-weight: var(--eq-weight-bold);
+}
+
+.eq-tabs__tab--active .eq-tabs__count {
+  background-color: var(--eq-ice);
+  color: var(--eq-deep);
+}

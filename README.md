@@ -7,9 +7,9 @@ All components reference `--eq-*` CSS custom properties. No hardcoded hex values
 ## Install
 
 ```sh
-pnpm add github:eq-solutions/eq-ui#v1.0.0
+pnpm add github:eq-solutions/eq-ui#v1.1.0
 # or
-npm install github:eq-solutions/eq-ui#v1.0.0
+npm install github:eq-solutions/eq-ui#v1.1.0
 ```
 
 `@eq-solutions/tokens` is a dependency — it installs automatically.
@@ -38,6 +38,7 @@ The EQ canonical button. Supports four variants, three sizes, a loading state, r
 | `variant` | `'primary' \| 'secondary' \| 'ghost' \| 'danger'` | `'primary'` | Visual style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Height + padding tier |
 | `loading` | `boolean` | `false` | Shows spinner, disables button, keeps children mounted |
+| `icon` | `ReactNode` | — | Leading Lucide icon (size 16). For icon-only, also pass `aria-label` |
 | `disabled` | `boolean` | `false` | Standard HTML disabled |
 | `...props` | `ButtonHTMLAttributes<HTMLButtonElement>` | — | All standard button attributes forwarded |
 | `ref` | `Ref<HTMLButtonElement>` | — | ForwardRef — access the DOM node |
@@ -79,9 +80,208 @@ import { Button } from '@eq-solutions/ui'
 // Danger confirmation
 <Button variant="danger" onClick={handleDelete}>Delete record</Button>
 
+// Leading icon (Lucide)
+import { Plus } from 'lucide-react'
+<Button icon={<Plus size={16} />}>New work order</Button>
+
 // Ref forwarding
 const ref = useRef<HTMLButtonElement>(null)
 <Button ref={ref}>Focusable</Button>
+```
+
+---
+
+### FormInput
+
+Label + input + hint/error in one accessible block. The label is wired to the input (`htmlFor`), and `aria-describedby` points at the hint or error so screen readers read it. Forwards a ref and all native `<input>` props.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | — | Uppercase field label above the input |
+| `error` | `string` | — | Validation message; switches to error style, announced via `role="alert"` |
+| `hint` | `string` | — | Helper text below the input (hidden while `error` is set) |
+| `...props` | `InputHTMLAttributes<HTMLInputElement>` | — | All native input attributes forwarded |
+| `ref` | `Ref<HTMLInputElement>` | — | ForwardRef |
+
+```tsx
+import { FormInput } from '@eq-solutions/ui'
+
+<FormInput label="Site name" value={name} onChange={e => setName(e.target.value)} />
+<FormInput label="Email" type="email" hint="We'll only use this to sign you in." />
+<FormInput label="PIN" error="That PIN doesn't match." />
+```
+
+---
+
+### StatusBadge
+
+Lifecycle pill with a leading state dot. Status is for *state*, never brand — each value maps to a fixed token palette so the same state reads identically across apps.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `status` | `'open' \| 'in-progress' \| 'overdue' \| 'closed' \| 'await'` | — | Lifecycle state |
+| `label` | `string` | — | Override the default label text |
+
+```tsx
+import { StatusBadge } from '@eq-solutions/ui'
+
+<StatusBadge status="open" />
+<StatusBadge status="overdue" />
+<StatusBadge status="closed" label="Done" />
+```
+
+---
+
+### KindPill
+
+Bordered tag classifying a work order by *kind* (category, not lifecycle). Quieter than `StatusBadge`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `kind` | `'preventive' \| 'corrective' \| 'inspection'` | — | Work-order kind |
+| `label` | `string` | — | Override the default label text |
+
+```tsx
+import { KindPill } from '@eq-solutions/ui'
+
+<KindPill kind="preventive" />
+<KindPill kind="corrective" />
+<KindPill kind="inspection" label="Audit" />
+```
+
+---
+
+### Card
+
+Flat bordered surface (no shadow — only floating UI gets a shadow). Optional header row with `title` + `actions`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `ReactNode` | — | Header heading |
+| `actions` | `ReactNode` | — | Right-aligned header content (buttons, filters) |
+| `padding` | `'none' \| 'sm' \| 'md' \| 'lg'` | `'md'` | Body padding tier (`'none'` for edge-to-edge tables) |
+| `...props` | `HTMLAttributes<HTMLDivElement>` (minus `title`) | — | Standard div attributes |
+
+```tsx
+import { Card, Button, Table } from '@eq-solutions/ui'
+
+<Card title="Work orders" actions={<Button size="sm">New</Button>}>
+  …
+</Card>
+
+// Edge-to-edge table
+<Card padding="none"><Table … /></Card>
+```
+
+---
+
+### Modal / ConfirmDialog
+
+Floating dialog — one of the few places a shadow is allowed. `Modal` handles the full a11y contract: portal to `document.body`, backdrop, Esc-to-close, focus-trap, body scroll-lock, and focus restoration on close.
+
+#### Modal props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | — | Mounted + visible |
+| `onClose` | `() => void` | — | Fired on Esc, backdrop click, or close |
+| `title` | `ReactNode` | — | Header heading |
+| `description` | `ReactNode` | — | Supporting copy under the title |
+| `children` | `ReactNode` | — | Body content |
+| `footer` | `ReactNode` | — | Footer (typically action buttons) |
+| `disableBackdropClose` | `boolean` | `false` | Ignore backdrop clicks |
+
+#### ConfirmDialog props
+
+`Modal` pre-wired with Cancel / Confirm.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` / `onClose` | — | — | As `Modal` |
+| `onConfirm` | `() => void` | — | Fired when the user confirms |
+| `title` / `description` | `ReactNode` | — | Heading + consequence copy |
+| `confirmLabel` | `string` | `'Confirm'` | Confirm button label |
+| `cancelLabel` | `string` | `'Cancel'` | Cancel button label |
+| `destructive` | `boolean` | `false` | Renders the confirm action red |
+| `loading` | `boolean` | `false` | Spins + disables the confirm button |
+
+```tsx
+import { Modal, ConfirmDialog, Button } from '@eq-solutions/ui'
+
+<Modal
+  open={open}
+  onClose={() => setOpen(false)}
+  title="Close out SLD-04?"
+  description="This marks the defect resolved."
+  footer={<>
+    <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+    <Button onClick={confirm}>Close out</Button>
+  </>}
+/>
+
+<ConfirmDialog
+  open={open}
+  onClose={() => setOpen(false)}
+  onConfirm={handleDelete}
+  title="Delete this report?"
+  description="This can't be undone."
+  confirmLabel="Delete"
+  destructive
+/>
+```
+
+---
+
+### Tabs
+
+Underline tab strip. Controlled (`value` + `onChange`), with `role="tablist"`, arrow-key roving focus, and optional per-tab counts. The panels are the consumer's to render.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | `TabItem[]` | — | `{ key, label, count?, disabled? }[]` |
+| `value` | `string` | — | Key of the active tab |
+| `onChange` | `(key: string) => void` | — | Selection callback |
+| `aria-label` | `string` | — | Accessible label for the tablist |
+
+```tsx
+import { Tabs } from '@eq-solutions/ui'
+
+<Tabs
+  value={tab}
+  onChange={setTab}
+  items={[
+    { key: 'all',    label: 'All' },
+    { key: 'open',   label: 'Open', count: 12 },
+    { key: 'closed', label: 'Closed' },
+  ]}
+/>
+```
+
+---
+
+### Toast
+
+`ToastProvider` + `useToast()`. Wrap the app once; call `toast(…)` anywhere. Toasts auto-dismiss (default 4s), stack bottom-right, and are announced via an `aria-live` region. Floating UI — shadow allowed.
+
+| `toast(opts)` field | Type | Default | Description |
+|---|---|---|---|
+| `title` | `ReactNode` | — | Bold first line |
+| `message` | `ReactNode` | — | Optional second-line detail |
+| `tone` | `'ok' \| 'warn' \| 'err' \| 'info'` | `'ok'` | Colour + default icon |
+| `duration` | `number` | `4000` | Auto-dismiss ms; `0` = persist until dismissed |
+| `icon` | `ReactNode` | — | Override the leading icon |
+
+```tsx
+import { ToastProvider, useToast } from '@eq-solutions/ui'
+
+// once, near the app root
+<ToastProvider><App /></ToastProvider>
+
+// anywhere under it
+const { toast } = useToast()
+toast({ tone: 'ok', title: 'Saved', message: 'Work order WO-2231 updated.' })
 ```
 
 ---
@@ -186,6 +386,8 @@ Generic over row type `T`.
 | `selectedIds` | `Set<string>` | — | Controlled selection state |
 | `onSelectionChange` | `(ids: Set<string>) => void` | — | Selection change callback |
 | `onRowClick` | `(row: T) => void` | — | Row click callback |
+| `loading` | `boolean` | `false` | Render skeleton placeholder rows instead of data |
+| `loadingRows` | `number` | `5` | Number of skeleton rows while `loading` |
 
 #### Usage
 
