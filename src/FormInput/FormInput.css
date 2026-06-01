@@ -49,7 +49,6 @@
 
 .eq-field__input--error:focus-visible {
   border-color: var(--eq-error-text);
-  box-shadow: 0 0 0 2px var(--eq-error-bg);
 }
 
 .eq-field[data-disabled] .eq-field__label {
