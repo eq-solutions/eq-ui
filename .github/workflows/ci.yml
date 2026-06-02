@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Token-only invariant: the shared kit must carry no hardcoded colours.
+      # Runs without the install too, but we gate it alongside typecheck.
+      - run: npm run check:tokens
+      - run: npm run typecheck

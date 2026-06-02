@@ -82,7 +82,9 @@
     "*.css"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check": "npm run typecheck && npm run check:tokens"
   },
   "dependencies": {
     "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.2.0"

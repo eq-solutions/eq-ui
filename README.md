@@ -457,11 +457,15 @@ const [selected, setSelected] = useState<Set<string>>(new Set())
 
 ## Token compliance
 
-Every component in this package is audited before release:
+The token-only invariant is **enforced in CI**, not just by review:
 
-- No hardcoded hex values. Grep for `#[0-9a-fA-F]{3,6}` returns zero matches in `src/`.
+- `npm run check:tokens` (script: `scripts/check-tokens.mjs`) fails the build on any
+  hardcoded colour literal — hex or `rgb/rgba/hsl/hsla` — in `src/`. A colour literal
+  is allowed only as the fallback of a `var(--eq-token, <fallback>)` expression. Runs
+  on every push/PR via `.github/workflows/ci.yml`, and locally via `npm run check`.
 - All colours reference `var(--eq-*)` properties from `@eq-solutions/tokens`.
 - All sizing uses token-defined spacing and radius variables.
+- Deliberate exceptions carry a `token-guard-allow` comment on the line.
 
 ## Related
 
