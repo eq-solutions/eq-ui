@@ -87,7 +87,7 @@
     "check": "npm run typecheck && npm run check:tokens"
   },
   "dependencies": {
-    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.2.0"
+    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.3.1"
   },
   "peerDependencies": {
     "react": ">=18",
