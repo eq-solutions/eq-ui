@@ -1,10 +1,10 @@
 {
   "name": "@eq-solutions/ui",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "CDC Solutions Pty Ltd",
-  "description": "Canonical EQ shared React components (Button, FormInput, StatusBadge, KindPill, Card, Modal, Tabs, Toast, Skeleton, Table) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
+  "description": "Canonical EQ shared React components (AppShell, AppSidebar, AppRail, Button, FormInput, StatusBadge, KindPill, Card, Modal, Tabs, Toast, Skeleton, Table) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
   "type": "module",
   "repository": {
     "type": "git",
@@ -72,6 +72,10 @@
       "types": "./src/Table/Table.tsx",
       "default": "./src/Table/Table.tsx"
     },
+    "./AppShell": {
+      "types": "./src/AppShell/index.ts",
+      "default": "./src/AppShell/index.ts"
+    },
     "./styles": "./src/index.css",
     "./package.json": "./package.json"
   },
@@ -89,6 +93,7 @@
   },
   "peerDependencies": {
     "@eq-solutions/tokens": ">=1.3.1",
+    "lucide-react": "^1.17.0",
     "react": ">=18",
     "react-dom": ">=18"
   },
@@ -96,6 +101,7 @@
     "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.3.2",
     "@types/react": "^18.3.29",
     "@types/react-dom": "^18.3.7",
+    "lucide-react": "^1.17.0",
     "typescript": "^5.9.3"
   },
   "publishConfig": {

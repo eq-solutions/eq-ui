@@ -52,3 +52,15 @@ export type {
 // Table
 export { Table } from './Table/Table'
 export type { TableProps, TableColumn, TableColumnDef } from './Table/Table'
+
+// AppShell — layout chrome (sidebar, icon rail, layout wrapper)
+export { AppShell, AppSidebar, AppRail } from './AppShell/index'
+export type {
+  AppShellProps,
+  AppSidebarProps,
+  AppSidebarSection,
+  AppSidebarItem,
+  AppSidebarUser,
+  AppRailProps,
+  AppRailItem,
+} from './AppShell/index'
