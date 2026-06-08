@@ -1,0 +1,29 @@
+/* @eq-solutions/ui — barrel stylesheet.
+ *
+ * Import this single file to get design tokens + all component styles:
+ *
+ *   @import "@eq-solutions/ui/src/index.css";
+ *
+ * or via the package export alias:
+ *
+ *   @import "@eq-solutions/ui/styles";
+ *
+ * Requirements: @eq-solutions/tokens must be listed as a direct dependency
+ * in the consuming app (it is a peerDependency of this package). If tokens
+ * are not installed, this import will fail at build time.
+ */
+
+/* ── 1. Design tokens ─────────────────────────────────────────────────────── */
+@import "@eq-solutions/tokens/tokens.css";
+
+/* ── 2. Component styles (alphabetical) ──────────────────────────────────── */
+@import "./Button/Button.css";
+@import "./Card/Card.css";
+@import "./FormInput/FormInput.css";
+@import "./KindPill/KindPill.css";
+@import "./Modal/Modal.css";
+@import "./Skeleton/Skeleton.css";
+@import "./StatusBadge/StatusBadge.css";
+@import "./Table/Table.css";
+@import "./Tabs/Tabs.css";
+@import "./Toast/Toast.css";

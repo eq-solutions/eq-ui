@@ -1,6 +1,6 @@
 {
   "name": "@eq-solutions/ui",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "CDC Solutions Pty Ltd",
@@ -72,6 +72,7 @@
       "types": "./src/Table/Table.tsx",
       "default": "./src/Table/Table.tsx"
     },
+    "./styles": "./src/index.css",
     "./package.json": "./package.json"
   },
   "files": [
@@ -86,14 +87,13 @@
     "check:tokens": "node scripts/check-tokens.mjs",
     "check": "npm run typecheck && npm run check:tokens"
   },
-  "dependencies": {
-    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.3.1"
-  },
   "peerDependencies": {
+    "@eq-solutions/tokens": ">=1.3.1",
     "react": ">=18",
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.3.2",
     "@types/react": "^18.3.29",
     "@types/react-dom": "^18.3.7",
     "typescript": "^5.9.3"
