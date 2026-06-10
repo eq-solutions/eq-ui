@@ -50,8 +50,15 @@ export type {
 } from './Skeleton/Skeleton'
 
 // Table
-export { Table } from './Table/Table'
-export type { TableProps, TableColumn, TableColumnDef } from './Table/Table'
+export { Table, TableBulkAction } from './Table/Table'
+export type {
+  TableProps,
+  TableColumn,
+  TableColumnDef,
+  TableSlicer,
+  TablePagination,
+  TableBulkActionProps,
+} from './Table/Table'
 
 // AppShell — layout chrome (sidebar, icon rail, layout wrapper)
 export { AppShell, AppSidebar, AppRail } from './AppShell/index'
