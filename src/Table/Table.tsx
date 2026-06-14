@@ -116,6 +116,31 @@ export interface TableProps<T> {
   deleteLabel?: string
   /** Label for the archive button. Defaults to `'Archive'`. */
   archiveLabel?: string
+  /**
+   * Customise the delete confirmation dialog copy.
+   * `title` and `description` each accept a string or a function receiving the selected count.
+   *
+   * @example
+   * deleteConfirm={{ description: n => `${n} plant item${n === 1 ? '' : 's'} will be permanently removed.` }}
+   */
+  deleteConfirm?: {
+    title?: string | ((count: number) => string)
+    description?: string | ((count: number) => string)
+  }
+  /**
+   * Show a confirmation dialog before archiving.
+   * Pass `true` for default copy, or an object to customise title/description.
+   * Omit (default) for immediate archive with no confirm.
+   */
+  archiveConfirm?: boolean | {
+    title?: string | ((count: number) => string)
+    description?: string | ((count: number) => string)
+  }
+  /**
+   * Called when a delete or archive action throws. Use to show a toast or error banner.
+   * The dialog/loading state is already reset before this fires.
+   */
+  onActionError?: (action: 'delete' | 'archive', error: unknown) => void
 }
 
 // ── TableBulkAction — styled button for use inside bulkActions ─────────────
@@ -241,6 +266,9 @@ export function Table<T>({
   onArchive,
   deleteLabel = 'Delete',
   archiveLabel = 'Archive',
+  deleteConfirm,
+  archiveConfirm,
+  onActionError,
 }: TableProps<T>) {
 
   // ── Sort ───────────────────────────────────────────────────────────────
@@ -417,8 +445,8 @@ export function Table<T>({
   const effectiveSelectedIds = selectedIds ?? (hasBuiltInActions ? internalSelected : undefined)
   const effectiveOnSelChange = onSelectionChange ?? (hasBuiltInActions ? setInternalSelected : undefined)
 
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [confirmAction, setConfirmAction] = useState<'delete' | 'archive' | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
 
   const allIds = pagedRows.map(getRowId)
   const allSelected = pagedRows.length > 0 && !!effectiveSelectedIds && allIds.every(id => effectiveSelectedIds.has(id))
@@ -444,15 +472,42 @@ export function Table<T>({
   const selCount = effectiveSelectedIds?.size ?? 0
 
   // ── Built-in bulk actions ──────────────────────────────────────────────
+
+  async function handleConfirmedAction() {
+    if (!confirmAction) return
+    setActionLoading(true)
+    try {
+      if (confirmAction === 'delete') await onDelete?.(selectedRows)
+      else await onArchive?.(selectedRows)
+      clearSelection()
+      setConfirmAction(null)
+    } catch (err) {
+      onActionError?.(confirmAction, err)
+      setConfirmAction(null)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const effectiveBulkActions = useMemo(() => {
     if (!hasBuiltInActions) return bulkActions
-    return (rows: T[], clear: () => void) => (
+    return (selectedRows: T[], clear: () => void) => (
       <>
-        {bulkActions?.(rows, clear)}
+        {bulkActions?.(selectedRows, clear)}
         {onArchive && (
           <TableBulkAction
             icon={<Archive size={15} />}
-            onClick={async () => { await onArchive(rows); clear() }}
+            disabled={actionLoading}
+            onClick={async () => {
+              if (archiveConfirm) {
+                setConfirmAction('archive')
+              } else {
+                setActionLoading(true)
+                try { await onArchive(selectedRows); clear() }
+                catch (err) { onActionError?.('archive', err) }
+                finally { setActionLoading(false) }
+              }
+            }}
           >
             {archiveLabel}
           </TableBulkAction>
@@ -461,14 +516,15 @@ export function Table<T>({
           <TableBulkAction
             icon={<Trash2 size={15} />}
             danger
-            onClick={() => setConfirmOpen(true)}
+            disabled={actionLoading}
+            onClick={() => setConfirmAction('delete')}
           >
             {deleteLabel}
           </TableBulkAction>
         )}
       </>
     )
-  }, [hasBuiltInActions, bulkActions, onArchive, onDelete, archiveLabel, deleteLabel])
+  }, [hasBuiltInActions, bulkActions, onArchive, onDelete, archiveLabel, deleteLabel, archiveConfirm, actionLoading, onActionError])
 
   // ── Export ─────────────────────────────────────────────────────────────
   function handleExport() {
@@ -886,27 +942,39 @@ export function Table<T>({
         )}
       </div>
 
-      {onDelete && (
-        <ConfirmDialog
-          open={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={async () => {
-            setDeleteLoading(true)
-            try {
-              await onDelete(selectedRows)
-              clearSelection()
-              setConfirmOpen(false)
-            } finally {
-              setDeleteLoading(false)
-            }
-          }}
-          title={`Delete ${selCount} ${selCount === 1 ? 'item' : 'items'}?`}
-          description="This can't be undone."
-          confirmLabel={deleteLabel}
-          destructive
-          loading={deleteLoading}
-        />
-      )}
+      {confirmAction && (() => {
+        const isDelete = confirmAction === 'delete'
+        const cfg = isDelete
+          ? deleteConfirm
+          : (archiveConfirm && typeof archiveConfirm === 'object' ? archiveConfirm : undefined)
+        const n = selCount
+        const resolve = (val: string | ((n: number) => string) | undefined, fallback: string) =>
+          val ? (typeof val === 'function' ? val(n) : val) : fallback
+        const title = resolve(
+          cfg?.title,
+          isDelete
+            ? `Delete ${n} ${n === 1 ? 'item' : 'items'}?`
+            : `Archive ${n} ${n === 1 ? 'item' : 'items'}?`,
+        )
+        const description = resolve(
+          cfg?.description,
+          isDelete
+            ? "This can't be undone."
+            : 'These items will be moved to the archive.',
+        )
+        return (
+          <ConfirmDialog
+            open
+            onClose={() => setConfirmAction(null)}
+            onConfirm={handleConfirmedAction}
+            title={title}
+            description={description}
+            confirmLabel={isDelete ? deleteLabel : archiveLabel}
+            destructive={isDelete}
+            loading={actionLoading}
+          />
+        )
+      })()}
     </div>
   )
 }
