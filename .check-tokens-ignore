@@ -1,0 +1,9 @@
+# Files excluded from the token-only invariant check.
+# Only add a file here when it CANNOT use --eq-* tokens — e.g. a dark-theme
+# component that relies on rgba alpha-layering over a specific bg colour that
+# has no single-token equivalent. Document the reason on the line above.
+
+# AppShell dark sidebar: rgba(255,255,255, X) alpha overlays over #0F1117
+# cannot be expressed as single tokens; the sidebar creates its own custom
+# properties (--eq-shell-bg etc.) for this purpose.
+src/AppShell/AppShell.css
