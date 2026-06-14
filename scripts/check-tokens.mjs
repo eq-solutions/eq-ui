@@ -16,12 +16,27 @@
  *
  * No dependencies — plain Node, runs without `npm install`.
  */
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const SRC = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'src')
+const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..')
+const SRC = join(ROOT, 'src')
 const EXTS = new Set(['.ts', '.tsx', '.css'])
+
+// Load .check-tokens-ignore — paths relative to repo root, one per line.
+// Use for entire files that legitimately cannot use tokens (e.g. a dark-theme
+// CSS file whose rgba alpha-layering has no single-token equivalent).
+const IGNORE_FILE = join(ROOT, '.check-tokens-ignore')
+const ignoredPaths = new Set(
+  existsSync(IGNORE_FILE)
+    ? readFileSync(IGNORE_FILE, 'utf8')
+        .split(/\r?\n/)
+        .map((l) => l.replace(/#.*$/, '').trim())
+        .filter(Boolean)
+        .map((p) => join(ROOT, p))
+    : []
+)
 
 const HEX = /#[0-9a-fA-F]{3,8}\b/
 const COLOR_FN = /\b(?:rgba?|hsla?)\s*\(/i
@@ -69,7 +84,7 @@ function walk(dir) {
 }
 
 const violations = []
-for (const file of walk(SRC)) {
+for (const file of walk(SRC).filter((f) => !ignoredPaths.has(f))) {
   const lines = readFileSync(file, 'utf8').split(/\r?\n/)
   lines.forEach((raw, idx) => {
     if (raw.includes('token-guard-allow')) return

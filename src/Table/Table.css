@@ -88,13 +88,13 @@
 
 .eq-table-slicer--active .eq-table-slicer__count,
 .eq-table-slicer[aria-pressed="true"] .eq-table-slicer__count {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha on var(--eq-sky) slicer pill */
   color: var(--eq-white);
 }
 
 .eq-table-slicer--active:hover,
 .eq-table-slicer[aria-pressed="true"]:hover {
-  background: #11111f;
+  background: #11111f; /* token-guard-allow: active-slicer hover — darker than --eq-ink, no token exists */
 }
 
 /* Toolbar right cluster */
@@ -391,11 +391,11 @@
 }
 
 .eq-table tbody tr.eq-table__row--selected {
-  background: #e1f1fb;
+  background: var(--eq-selection-bg, #e1f1fb);
 }
 
 .eq-table tbody tr.eq-table__row--selected:hover {
-  background: #d5ecf8;
+  background: var(--eq-selection-bg-hover, #d5ecf8);
 }
 
 /* Density */
@@ -417,7 +417,7 @@
   background: var(--eq-ice);
 }
 .eq-table[data-rows="zebra"] tbody tr.eq-table__row--selected {
-  background: #e1f1fb;
+  background: var(--eq-selection-bg, #e1f1fb);
 }
 .eq-table[data-rows="zebra"] tbody td {
   border-top: 0;
@@ -557,7 +557,7 @@
 
 /* Header checkbox: white outline on sky background */
 .eq-table thead .eq-table__chk {
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.55); /* token-guard-allow: white alpha on var(--eq-sky) header */
   background: transparent;
 }
 
@@ -627,7 +627,7 @@
 .eq-table__bulk-vr {
   width: 1px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha divider on var(--eq-ink) bulk bar */
   flex-shrink: 0;
 }
 
@@ -646,7 +646,7 @@
   border-radius: var(--eq-radius-pill);
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.85); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
   font-family: var(--eq-font-stack);
   font-size: var(--eq-text-sm);
   font-weight: 600;
@@ -661,12 +661,12 @@
 }
 
 .eq-table__bulk-act:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1); /* token-guard-allow: white alpha hover on var(--eq-ink) bulk bar */
   color: var(--eq-white);
 }
 
 .eq-table__bulk-act--danger:hover {
-  background: rgba(185, 28, 28, 0.92);
+  background: rgba(185, 28, 28, 0.92); /* token-guard-allow: danger red on dark bulk bar — no --eq-error token at this opacity */
   color: var(--eq-white);
 }
 
@@ -675,8 +675,8 @@
   height: 34px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
+  color: rgba(255, 255, 255, 0.7); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -686,7 +686,7 @@
 }
 
 .eq-table__bulk-close:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
   color: var(--eq-white);
 }
 
