@@ -312,15 +312,17 @@
   z-index: 10;
   text-align: left;
   font-size: var(--eq-text-xs);
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 14px 16px;
+  padding: 12px 16px;
   white-space: nowrap;
   user-select: none;
-  background: var(--eq-sky);
-  color: var(--eq-white);
-  transition: background var(--eq-duration-default) var(--eq-ease);
+  background: var(--eq-gray-50);
+  color: var(--eq-grey);
+  border-bottom: 1px solid var(--eq-gray-200);
+  transition: background var(--eq-duration-default) var(--eq-ease),
+              color var(--eq-duration-default) var(--eq-ease);
 }
 
 .eq-table thead th:first-child { padding-left: 20px; }
@@ -342,17 +344,23 @@
   transition: opacity var(--eq-duration-default) var(--eq-ease);
 }
 
+.eq-table thead th.eq-table__th--sortable:hover {
+  color: var(--eq-ink);
+}
+
 .eq-table thead th.eq-table__th--sortable:hover .eq-table__sort-icon {
   opacity: 0.9;
 }
 
-.eq-table thead th[data-sorted] .eq-table__sort-icon {
-  opacity: 1;
+/* Active sort column: ink label + sky caret, subtle tint */
+.eq-table thead th[data-sorted] {
+  background: var(--eq-gray-100);
+  color: var(--eq-ink);
 }
 
-/* Active sort column: deepen to --eq-deep */
-.eq-table thead th[data-sorted] {
-  background: var(--eq-deep);
+.eq-table thead th[data-sorted] .eq-table__sort-icon {
+  opacity: 1;
+  color: var(--eq-sky);
 }
 
 .eq-table thead th.eq-table__col-check {
@@ -373,10 +381,17 @@
   vertical-align: middle;
   font-size: var(--eq-text-base);
   color: var(--eq-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .eq-table tbody td:first-child { padding-left: 20px; }
 .eq-table tbody td:last-child  { padding-right: 20px; }
+
+/* Primary column: emphasise the first data cell as the row identifier */
+.eq-table tbody td:first-child:not(.eq-table__col-check),
+.eq-table tbody .eq-table__col-check + td {
+  font-weight: 500;
+}
 
 .eq-table tbody tr {
   transition: background var(--eq-duration-default) var(--eq-ease);
@@ -555,29 +570,16 @@
   background: var(--eq-white);
 }
 
-/* Header checkbox: white outline on sky background */
-.eq-table thead .eq-table__chk {
-  border-color: rgba(255, 255, 255, 0.55); /* token-guard-allow: white alpha on var(--eq-sky) header */
-  background: transparent;
-}
-
-.eq-table thead .eq-table__chk--on,
-.eq-table thead .eq-table__chk--mixed {
-  background: var(--eq-white);
-  border-color: var(--eq-white);
-  color: var(--eq-sky);
-}
-
 /* ── Zone F — Bulk action bar ──────────────────────────────────────── */
 
 .eq-table__bulk-bar {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   margin-inline: auto;
   width: max-content;
   max-width: calc(100% - 36px);
-  bottom: 18px;
+  bottom: 24px;
   z-index: 60;
   display: flex;
   align-items: center;
