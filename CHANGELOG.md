@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+### Patch Changes
+
+- f367184: Replace three hardcoded `rgba()` colour literals in `DropdownMenu.css` with canonical `--eq-*` tokens (border, hover background, separator), clearing the token-guard CI gate.
+
 ## 1.5.0
 
 ### Minor Changes
