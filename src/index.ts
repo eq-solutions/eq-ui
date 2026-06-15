@@ -60,6 +60,10 @@ export type {
   TableBulkActionProps,
 } from './Table/Table'
 
+// DropdownMenu
+export { DropdownMenu } from './DropdownMenu/DropdownMenu'
+export type { DropdownMenuProps, DropdownMenuEntry, DropdownMenuItemDef, DropdownMenuSeparatorDef } from './DropdownMenu/DropdownMenu'
+
 // AppShell — layout chrome (sidebar, icon rail, layout wrapper)
 export { AppShell, AppSidebar, AppRail } from './AppShell/index'
 export type {

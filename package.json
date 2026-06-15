@@ -1,6 +1,6 @@
 {
   "name": "@eq-solutions/ui",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "CDC Solutions Pty Ltd",
@@ -71,6 +71,10 @@
     "./Table": {
       "types": "./src/Table/Table.tsx",
       "default": "./src/Table/Table.tsx"
+    },
+    "./DropdownMenu": {
+      "types": "./src/DropdownMenu/DropdownMenu.tsx",
+      "default": "./src/DropdownMenu/DropdownMenu.tsx"
     },
     "./AppShell": {
       "types": "./src/AppShell/index.ts",

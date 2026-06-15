@@ -1,0 +1,80 @@
+/*
+ * @eq-solutions/ui — DropdownMenu
+ *
+ * Floating UI — shadow is permitted here. All colours, radii, spacing, motion
+ * reference --eq-* custom properties from @eq-solutions/tokens.
+ */
+
+.eq-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.eq-dropdown__trigger {
+  display: contents;
+}
+
+.eq-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: 600;
+  min-width: 160px;
+  background: var(--eq-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--eq-radius-card);
+  box-shadow: var(--eq-shadow-lg);
+  padding: 4px 0;
+  font-family: var(--eq-font-stack);
+}
+
+.eq-dropdown__menu--right { right: 0; }
+.eq-dropdown__menu--left  { left: 0; }
+
+.eq-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  font-size: var(--eq-text-sm);
+  font-family: inherit;
+  color: var(--eq-ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 0;
+  transition: background var(--eq-duration-default, 120ms) var(--eq-ease, ease);
+  white-space: nowrap;
+}
+
+.eq-dropdown__item:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.eq-dropdown__item:focus-visible {
+  outline: 2px solid var(--eq-focus-ring);
+  outline-offset: var(--eq-focus-offset, -2px);
+}
+
+.eq-dropdown__item--danger {
+  color: var(--eq-err, #dc2626);
+}
+
+.eq-dropdown__item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.eq-dropdown__icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.eq-dropdown__sep {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.07);
+  margin: 4px 0;
+}
