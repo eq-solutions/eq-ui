@@ -42,6 +42,10 @@ export type { ToastOptions, ToastTone } from './Toast/Toast'
 
 // Skeleton
 export { Skeleton, SkeletonRows, SkeletonCards } from './Skeleton/Skeleton'
+
+// Spinner
+export { Spinner } from './Spinner/Spinner'
+export type { SpinnerProps, SpinnerSize } from './Spinner/Spinner'
 export type {
   SkeletonProps,
   SkeletonShape,

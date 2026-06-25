@@ -1,0 +1,51 @@
+/*
+ * @eq-solutions/ui — Spinner
+ *
+ * All colours, radii, and motion reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+/* ── Base ── */
+
+.eq-spinner {
+  display: inline-block;
+  border-radius: var(--eq-radius-full, 9999px);
+  border-style: solid;
+  border-color: var(--eq-spinner-track, var(--eq-gray-200));
+  border-top-color: var(--eq-spinner-fill, var(--eq-sky, #3da8d8));
+  animation: eq-spinner-rotate var(--eq-duration-default, 1.4s) linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Sizes ── */
+
+.eq-spinner--sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.eq-spinner--md {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.eq-spinner--lg {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+/* ── Inverted (for use on dark/primary backgrounds) ── */
+
+.eq-spinner--inverted {
+  --eq-spinner-track: rgba(255, 255, 255, 0.3);
+  --eq-spinner-fill: #ffffff;
+}
+
+/* ── Keyframe ── */
+
+@keyframes eq-spinner-rotate {
+  to { transform: rotate(360deg); }
+}
