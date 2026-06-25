@@ -1,0 +1,173 @@
+/*
+ * @eq-solutions/ui — Spinner
+ *
+ * All colours, radii, and motion reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values. Component-internal geometry
+ * (pixel sizes, gaps) uses local --sp-* custom properties, scoped per size.
+ *
+ * The consuming app is responsible for importing @eq-solutions/tokens/tokens.css
+ * so the custom properties are defined on :root.
+ */
+
+/* ── Root ── */
+
+.eq-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ── Sizes (component-internal geometry) ── */
+
+.eq-spinner--sm {
+  --sp-size: 16px;
+  --sp-thick: 3px;
+  --sp-gap: 2px;
+  --sp-ring-border: 2px;
+  --sp-dot: 5px;
+  --sp-trail-dot: 3px;
+}
+
+.eq-spinner--md {
+  --sp-size: 28px;
+  --sp-thick: 4px;
+  --sp-gap: 3px;
+  --sp-ring-border: 3px;
+  --sp-dot: 7px;
+  --sp-trail-dot: 5px;
+}
+
+.eq-spinner--lg {
+  --sp-size: 40px;
+  --sp-thick: 5px;
+  --sp-gap: 4px;
+  --sp-ring-border: 4px;
+  --sp-dot: 9px;
+  --sp-trail-dot: 6px;
+}
+
+/* ── Variant: bars (default) — EQ equalizer ── */
+
+.eq-spinner--bars .eq-spinner__pieces {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: var(--sp-gap);
+  height: var(--sp-size);
+}
+
+.eq-spinner--bars .eq-spinner__piece {
+  width: var(--sp-thick);
+  height: 100%;
+  border-radius: var(--eq-radius-full, 9999px);
+  background-color: var(--eq-sky);
+  transform-origin: bottom;
+  animation: eq-spinner-bars var(--eq-duration-spinner, 0.9s) ease-in-out infinite;
+}
+
+.eq-spinner--bars .eq-spinner__piece:nth-child(2) {
+  background-color: var(--eq-deep);
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.2);
+}
+.eq-spinner--bars .eq-spinner__piece:nth-child(3) {
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.4);
+}
+.eq-spinner--bars .eq-spinner__piece:nth-child(4) {
+  background-color: var(--eq-deep);
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.15);
+}
+.eq-spinner--bars .eq-spinner__piece:nth-child(5) {
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.3);
+}
+
+@keyframes eq-spinner-bars {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1); }
+}
+
+/* ── Variant: ring — single rotating arc ── */
+
+.eq-spinner--ring .eq-spinner__ring {
+  width: var(--sp-size);
+  height: var(--sp-size);
+  border-radius: var(--eq-radius-full, 9999px);
+  border: var(--sp-ring-border) solid var(--eq-gray-200);
+  border-top-color: var(--eq-sky);
+  animation: eq-spinner-ring var(--eq-duration-spinner, 0.9s) linear infinite;
+}
+
+@keyframes eq-spinner-ring {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Variant: dots — three pulsing dots ── */
+
+.eq-spinner--dots .eq-spinner__pieces {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-gap);
+  height: var(--sp-size);
+}
+
+.eq-spinner--dots .eq-spinner__piece {
+  width: var(--sp-dot);
+  height: var(--sp-dot);
+  border-radius: var(--eq-radius-full, 9999px);
+  background-color: var(--eq-sky);
+  animation: eq-spinner-dots var(--eq-duration-spinner, 0.9s) ease-in-out infinite;
+}
+
+.eq-spinner--dots .eq-spinner__piece:nth-child(2) {
+  background-color: var(--eq-deep);
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.2);
+}
+.eq-spinner--dots .eq-spinner__piece:nth-child(3) {
+  animation-delay: calc(var(--eq-duration-spinner, 0.9s) * 0.4);
+}
+
+@keyframes eq-spinner-dots {
+  0%, 80%, 100% { transform: translateY(0);     opacity: 0.35; }
+  40%           { transform: translateY(-45%);  opacity: 1; }
+}
+
+/* ── Variant: trail — comet ring of fading dots ── */
+
+.eq-spinner--trail .eq-spinner__pieces {
+  position: relative;
+  width: var(--sp-size);
+  height: var(--sp-size);
+  animation: eq-spinner-ring var(--eq-duration-spinner, 0.9s) linear infinite;
+}
+
+.eq-spinner--trail .eq-spinner__piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--sp-trail-dot);
+  height: var(--sp-trail-dot);
+  margin: calc(var(--sp-trail-dot) / -2);
+  border-radius: var(--eq-radius-full, 9999px);
+  background-color: var(--eq-sky);
+}
+
+.eq-spinner--trail .eq-spinner__piece:nth-child(1) { transform: rotate(0deg)   translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 1; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(2) { transform: rotate(45deg)  translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.86; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(3) { transform: rotate(90deg)  translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.72; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(4) { transform: rotate(135deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.58; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(5) { transform: rotate(180deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.44; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(6) { transform: rotate(225deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.32; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(7) { transform: rotate(270deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.2; }
+.eq-spinner--trail .eq-spinner__piece:nth-child(8) { transform: rotate(315deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.12; }
+
+/* ── Reduced motion — freeze to a static, legible glyph ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-spinner__ring,
+  .eq-spinner__piece,
+  .eq-spinner--trail .eq-spinner__pieces {
+    animation: none;
+  }
+  .eq-spinner--bars .eq-spinner__piece { transform: scaleY(1); }
+  .eq-spinner--dots .eq-spinner__piece { transform: none; opacity: 1; }
+}

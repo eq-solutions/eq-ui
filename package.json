@@ -4,7 +4,7 @@
   "private": false,
   "license": "UNLICENSED",
   "author": "CDC Solutions Pty Ltd",
-  "description": "Canonical EQ shared React components (AppShell, AppSidebar, AppRail, Button, FormInput, StatusBadge, KindPill, Card, Modal, Tabs, Toast, Skeleton, Table) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
+  "description": "Canonical EQ shared React components (AppShell, AppSidebar, AppRail, Button, FormInput, StatusBadge, KindPill, Card, Modal, Tabs, Toast, Skeleton, Spinner, Table) consuming @eq-solutions/tokens. Companion to @eq-solutions/tokens + @eq-solutions/roles.",
   "type": "module",
   "repository": {
     "type": "git",
@@ -67,6 +67,10 @@
     "./Skeleton": {
       "types": "./src/Skeleton/Skeleton.tsx",
       "default": "./src/Skeleton/Skeleton.tsx"
+    },
+    "./Spinner": {
+      "types": "./src/Spinner/Spinner.tsx",
+      "default": "./src/Spinner/Spinner.tsx"
     },
     "./Table": {
       "types": "./src/Table/Table.tsx",
