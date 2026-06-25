@@ -28,6 +28,12 @@ export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
    * The animation itself is `aria-hidden`; this label carries the meaning.
    */
   label?: string
+  /**
+   * Render the pieces in white, for use on a filled / coloured surface — a
+   * primary button, a sky banner — where the default sky/deep pieces would
+   * have too little contrast. Defaults to `false`.
+   */
+  inverted?: boolean
 }
 
 const PIECE_COUNT: Record<Exclude<SpinnerVariant, 'ring'>, number> = {
@@ -61,11 +67,15 @@ const PIECE_COUNT: Record<Exclude<SpinnerVariant, 'ring'>, number> = {
  *
  * // Quiet ring for a route transition
  * <Spinner variant="ring" />
+ *
+ * // White, inside a filled primary button
+ * <Button variant="primary">{busy && <Spinner variant="ring" size="sm" inverted />} Save</Button>
  */
 export function Spinner({
   variant = 'bars',
   size = 'md',
   label = 'Loading',
+  inverted = false,
   className,
   ...props
 }: SpinnerProps) {
@@ -73,6 +83,7 @@ export function Spinner({
     'eq-spinner',
     `eq-spinner--${variant}`,
     `eq-spinner--${size}`,
+    inverted && 'eq-spinner--inverted',
     className,
   ]
     .filter(Boolean)

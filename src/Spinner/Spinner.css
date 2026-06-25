@@ -160,6 +160,21 @@
 .eq-spinner--trail .eq-spinner__piece:nth-child(7) { transform: rotate(270deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.2; }
 .eq-spinner--trail .eq-spinner__piece:nth-child(8) { transform: rotate(315deg) translateY(calc((var(--sp-trail-dot) - var(--sp-size)) / 2)); opacity: 0.12; }
 
+/* ── Inverted — white, for filled / coloured surfaces (e.g. primary buttons) ── */
+
+/* `:nth-child(n)` matches the per-piece variant rules' specificity, so these
+   win by source order and recolour every bar / dot / trail piece — including
+   the --eq-deep accents — to white. The ring drops its track to transparent so
+   only the white arc shows against the coloured surface. */
+.eq-spinner--inverted .eq-spinner__piece:nth-child(n) {
+  background-color: var(--eq-white);
+}
+
+.eq-spinner--inverted .eq-spinner__ring {
+  border-color: transparent;
+  border-top-color: var(--eq-white);
+}
+
 /* ── Reduced motion — freeze to a static, legible glyph ── */
 
 @media (prefers-reduced-motion: reduce) {
