@@ -49,6 +49,10 @@ export type {
   SkeletonCardsProps,
 } from './Skeleton/Skeleton'
 
+// Spinner
+export { Spinner } from './Spinner/Spinner'
+export type { SpinnerProps, SpinnerVariant, SpinnerSize } from './Spinner/Spinner'
+
 // Table
 export { Table, TableBulkAction } from './Table/Table'
 export type {

@@ -350,6 +350,44 @@ import { Skeleton, SkeletonRows, SkeletonCards } from '@eq-solutions/ui'
 
 ---
 
+### Spinner
+
+Animated loading indicator. The default `bars` variant is the EQ signature — equalizer bars in `--eq-sky` / `--eq-deep` that echo the brand name. Three alternates cover the rest of the loading vocabulary. Pure CSS (no JS animation), all colour + motion from `--eq-*` tokens, and honours `prefers-reduced-motion`.
+
+Reach for `Spinner` when there's nothing to lay out yet (a button action, a route change, a first paint). Reach for `Skeleton` when you know the shape of the content that's coming.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'bars' \| 'ring' \| 'dots' \| 'trail'` | `'bars'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Footprint (16 / 28 / 40px) |
+| `label` | `string` | `'Loading'` | Accessible label (`role="status"`); the animation is `aria-hidden` |
+| `...props` | `HTMLAttributes<HTMLSpanElement>` | — | All span attributes forwarded |
+
+| Variant | Use for |
+|---|---|
+| `bars` | The signature — full-page / first-paint loads |
+| `ring` | Quiet workhorse — panels, route transitions |
+| `dots` | Inline — buttons, table rows, beside a label |
+| `trail` | Premium feel — full-page waits |
+
+```tsx
+import { Spinner } from '@eq-solutions/ui'
+
+// Default — EQ bars, panel size
+<Spinner />
+
+// Inline beside a label
+<span>Saving <Spinner variant="dots" size="sm" /></span>
+
+// Full-page wait
+<Spinner variant="trail" size="lg" label="Loading work orders" />
+
+// Quiet ring for a route transition
+<Spinner variant="ring" />
+```
+
+---
+
 ### Table
 
 Generic sortable data table. Supports filterable columns, row selection checkboxes, row-click navigation, per-row style overrides, and an empty state. All styling uses `--eq-*` CSS custom properties.
