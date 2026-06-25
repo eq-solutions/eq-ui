@@ -361,6 +361,7 @@ Reach for `Spinner` when there's nothing to lay out yet (a button action, a rout
 | `variant` | `'bars' \| 'ring' \| 'dots' \| 'trail'` | `'bars'` | Visual style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Footprint (16 / 28 / 40px) |
 | `label` | `string` | `'Loading'` | Accessible label (`role="status"`); the animation is `aria-hidden` |
+| `inverted` | `boolean` | `false` | Render the pieces white, for filled / coloured surfaces (e.g. a primary button) |
 | `...props` | `HTMLAttributes<HTMLSpanElement>` | — | All span attributes forwarded |
 
 | Variant | Use for |
