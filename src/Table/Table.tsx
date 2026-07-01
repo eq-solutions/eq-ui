@@ -75,6 +75,16 @@ export interface TableProps<T> {
   /** Show a Columns toggle button that opens a popover to show/hide columns. */
   columnToggle?: boolean
 
+  /** Column keys hidden the first time a user sees this table (before any localStorage entry exists). */
+  defaultHiddenColumns?: string[]
+
+  /**
+   * Persist column visibility to localStorage under this key, so a user's
+   * show/hide choices survive reloads. Scope the key per table + tenant
+   * (e.g. `staff-columns:${tenantSlug}`) so preferences don't leak across tenants.
+   */
+  persistKey?: string
+
   /** Show an Export button that downloads the current filtered+sorted rows as CSV. */
   exportable?: boolean | { filename?: string }
 
@@ -255,6 +265,8 @@ export function Table<T>({
   onSlicerChange,
   globalSearch = false,
   columnToggle = false,
+  defaultHiddenColumns,
+  persistKey,
   exportable = false,
   bulkActions,
   rowIndicator,
@@ -337,7 +349,17 @@ export function Table<T>({
       : (globalSearch.placeholder ?? 'Search…')
 
   // ── Column visibility ──────────────────────────────────────────────────
-  const [hiddenCols, setHiddenCols] = useState<Set<string>>(new Set())
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
+    if (persistKey) {
+      try {
+        const stored = window.localStorage.getItem(`eq-table-hidden-cols:${persistKey}`)
+        if (stored) return new Set(JSON.parse(stored) as string[])
+      } catch {
+        // localStorage unavailable (SSR, private mode, quota) — fall through to default
+      }
+    }
+    return new Set(defaultHiddenColumns ?? [])
+  })
   const [colsMenuOpen, setColsMenuOpen] = useState(false)
   const colsMenuRef = useRef<HTMLDivElement>(null)
 
@@ -356,6 +378,13 @@ export function Table<T>({
     setHiddenCols(prev => {
       const next = new Set(prev)
       next.has(key) ? next.delete(key) : next.add(key)
+      if (persistKey) {
+        try {
+          window.localStorage.setItem(`eq-table-hidden-cols:${persistKey}`, JSON.stringify([...next]))
+        } catch {
+          // localStorage unavailable — visibility still works for this session
+        }
+      }
       return next
     })
   }
