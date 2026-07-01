@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.0
+
+### Minor Changes
+
+- 26c7d69: Table: add `persistKey` (localStorage-backed column visibility) and `defaultHiddenColumns` props, so consumers can offer a personalised, reload-safe column set.
+
 ## 1.9.0
 
 ### Minor Changes
