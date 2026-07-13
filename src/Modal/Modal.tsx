@@ -59,8 +59,18 @@ export function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const restoreRef = useRef<Element | null>(null)
+  const onCloseRef = useRef(onClose)
   const titleId = useId()
   const descId = useId()
+
+  // Keep the latest `onClose` reachable from the keydown handler without making
+  // the focus/lock effect below depend on its identity. Consumers routinely pass
+  // an inline `onClose={() => setOpen(false)}`, which changes every render; if the
+  // focus effect keyed on it, every parent re-render would re-run and yank focus
+  // back to the first field mid-typing.
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
     if (!open) return
@@ -73,7 +83,7 @@ export function Modal({
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.stopPropagation()
-        onClose()
+        onCloseRef.current()
         return
       }
       if (e.key !== 'Tab' || !dialog) return
@@ -102,7 +112,7 @@ export function Modal({
       document.body.style.overflow = prevOverflow
       if (restoreRef.current instanceof HTMLElement) restoreRef.current.focus()
     }
-  }, [open, onClose])
+  }, [open])
 
   if (!open || typeof document === 'undefined') return null
 
