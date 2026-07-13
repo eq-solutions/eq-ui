@@ -19,6 +19,7 @@ jobs:
       # Runs without the install too, but we gate it alongside typecheck.
       - run: npm run check:tokens
       - run: npm run typecheck
+      - run: npm test
 
   changeset:
     name: Changeset present
