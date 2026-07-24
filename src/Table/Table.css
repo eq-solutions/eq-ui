@@ -373,6 +373,184 @@
   width: 44px;
 }
 
+/* Excel-style header filter (multiselect) */
+
+.eq-table__th-filter-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.eq-table__th-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 2px;
+  margin: 0;
+  border-radius: 4px;
+  color: var(--eq-gray-400);
+  cursor: pointer;
+  transition: color var(--eq-duration-default) var(--eq-ease),
+              background var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-table__th-filter-btn:hover {
+  color: var(--eq-ink);
+  background: var(--eq-gray-100);
+}
+
+.eq-table__th-filter-btn--active {
+  color: var(--eq-sky);
+}
+
+.eq-table__th-filter-count {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--eq-white);
+  background: var(--eq-sky);
+  border-radius: var(--eq-radius-pill);
+  padding: 2px 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.eq-table__filter-menu {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  z-index: 45;
+  width: 220px;
+  background: var(--eq-white);
+  border: 1px solid var(--eq-gray-200);
+  border-radius: var(--eq-radius-card);
+  box-shadow: var(--eq-shadow-lg);
+  padding: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: normal;
+  cursor: default;
+  animation: eq-table-pop 0.12s ease;
+}
+
+.eq-table__filter-menu-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.eq-table__filter-menu-search > svg {
+  position: absolute;
+  left: 8px;
+  color: var(--eq-gray-400);
+  pointer-events: none;
+}
+
+.eq-table__filter-menu-search input {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px 0 26px;
+  border-radius: var(--eq-radius-input);
+  border: 1px solid var(--eq-gray-200);
+  background: var(--eq-gray-50);
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-sm);
+  color: var(--eq-ink);
+  outline: none;
+}
+
+.eq-table__filter-menu-search input:focus {
+  border-color: var(--eq-sky);
+}
+
+.eq-table__filter-menu-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 6px;
+  border-bottom: 1px solid var(--eq-gray-100);
+  margin-bottom: 4px;
+}
+
+.eq-table__filter-menu-actions button {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 2px 0;
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-xs);
+  font-weight: 600;
+  color: var(--eq-sky);
+  cursor: pointer;
+}
+
+.eq-table__filter-menu-actions button:hover {
+  color: var(--eq-deep);
+}
+
+.eq-table__filter-menu-actions button:disabled {
+  color: var(--eq-gray-300);
+  cursor: default;
+}
+
+.eq-table__filter-menu-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.eq-table__filter-menu-empty {
+  padding: 10px 8px;
+  font-size: var(--eq-text-sm);
+  color: var(--eq-gray-400);
+  text-align: center;
+}
+
+.eq-table__filter-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px;
+  border-radius: var(--eq-radius-input);
+  cursor: pointer;
+  font-size: var(--eq-text-sm);
+  font-weight: 500;
+  color: var(--eq-ink);
+  user-select: none;
+}
+
+.eq-table__filter-menu-row:hover {
+  background: var(--eq-ice);
+}
+
+.eq-table__filter-menu-row input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.eq-table__filter-menu-check {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1.5px solid var(--eq-gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--eq-white);
+  transition: background var(--eq-duration-default) var(--eq-ease),
+              border-color var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-table__filter-menu-check--on {
+  background: var(--eq-sky);
+  border-color: var(--eq-sky);
+}
+
 /* ── Zone E — Data rows ────────────────────────────────────────────── */
 
 .eq-table tbody td {
@@ -786,7 +964,8 @@
     transition: opacity 0.01ms;
     transform: none;
   }
-  .eq-table-popover {
+  .eq-table-popover,
+  .eq-table__filter-menu {
     animation: none;
   }
 }
