@@ -311,21 +311,6 @@ export function Table<T>({
       return next
     })
   }
-  const autoSelectOptions = useMemo(() => {
-    const opts: Record<string, { value: string; label: string }[]> = {}
-    for (const col of columns) {
-      if ((col.filterable === 'select' || col.filterable === 'multiselect') && !col.filterOptions) {
-        const seen = new Set<string>()
-        for (const row of rows) {
-          const val = String((row as Record<string, unknown>)[col.key] ?? '').trim()
-          if (val) seen.add(val)
-        }
-        opts[col.key] = Array.from(seen).sort().map(v => ({ value: v, label: v }))
-      }
-    }
-    return opts
-  }, [columns, rows])
-
   // ── Multi-select (Excel-style) header filters ──────────────────────────
   const [multiFilters, setMultiFilters] = useState<Record<string, Set<string>>>({})
   function toggleMultiFilterValue(key: string, value: string) {
@@ -445,58 +430,69 @@ export function Table<T>({
   )
 
   // ── Filter pipeline: slicer → search → per-column → sort ──────────────
-  const filteredRows = useMemo(() => {
-    let r = rows
-
-    // slicer
+  // Shared by filteredRows and the multiselect option lists below — a
+  // multiselect column's own checklist cascades off every OTHER active
+  // filter (slicer, search, text/select columns, other multiselect
+  // columns), matching Excel: filtering one column narrows what's offered
+  // in the next column's dropdown. `excludeMultiKey` lets a column's own
+  // options be computed as if its own filter weren't applied yet.
+  const rowMatchesFilters = useCallback((row: T, excludeMultiKey?: string) => {
     if (slicers && activeSlicer) {
       const s = slicers.find(s => s.key === activeSlicer)
-      if (s?.filter) r = r.filter(s.filter)
+      if (s?.filter && !s.filter(row)) return false
     }
 
-    // global search
     if (query.trim()) {
       const q = query.toLowerCase()
-      r = r.filter(row =>
-        columns.some(col => {
-          const val = (row as Record<string, unknown>)[col.key]
-          return val != null && String(val).toLowerCase().includes(q)
-        })
-      )
-    }
-
-    // per-column filters
-    if (Object.keys(filters).length > 0) {
-      r = r.filter(row => {
-        for (const [key, filterVal] of Object.entries(filters)) {
-          const col = columns.find(c => c.key === key)
-          if (!col) continue
-          const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
-          if (col.filterable === 'select') {
-            if (cellVal !== filterVal.toLowerCase()) return false
-          } else {
-            if (!cellVal.includes(filterVal.toLowerCase())) return false
-          }
-        }
-        return true
+      const matches = columns.some(col => {
+        const val = (row as Record<string, unknown>)[col.key]
+        return val != null && String(val).toLowerCase().includes(q)
       })
+      if (!matches) return false
     }
 
-    // multi-select header filters (Excel-style checklist)
-    if (Object.keys(multiFilters).length > 0) {
-      r = r.filter(row => {
-        for (const [key, valueSet] of Object.entries(multiFilters)) {
-          if (!valueSet || valueSet.size === 0) continue
-          const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
-          const matches = Array.from(valueSet).some(v => v.toLowerCase() === cellVal)
-          if (!matches) return false
+    for (const [key, filterVal] of Object.entries(filters)) {
+      const col = columns.find(c => c.key === key)
+      if (!col) continue
+      const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
+      if (col.filterable === 'select') {
+        if (cellVal !== filterVal.toLowerCase()) return false
+      } else {
+        if (!cellVal.includes(filterVal.toLowerCase())) return false
+      }
+    }
+
+    for (const [key, valueSet] of Object.entries(multiFilters)) {
+      if (key === excludeMultiKey) continue
+      if (!valueSet || valueSet.size === 0) continue
+      const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
+      const matches = Array.from(valueSet).some(v => v.toLowerCase() === cellVal)
+      if (!matches) return false
+    }
+
+    return true
+  }, [slicers, activeSlicer, query, filters, multiFilters, columns])
+
+  const autoSelectOptions = useMemo(() => {
+    const opts: Record<string, { value: string; label: string }[]> = {}
+    for (const col of columns) {
+      if ((col.filterable === 'select' || col.filterable === 'multiselect') && !col.filterOptions) {
+        const seen = new Set<string>()
+        for (const row of rows) {
+          if (col.filterable === 'multiselect' && !rowMatchesFilters(row, col.key)) continue
+          const val = String((row as Record<string, unknown>)[col.key] ?? '').trim()
+          if (val) seen.add(val)
         }
-        return true
-      })
+        opts[col.key] = Array.from(seen).sort().map(v => ({ value: v, label: v }))
+      }
     }
+    return opts
+  }, [columns, rows, rowMatchesFilters])
 
-    return r
-  }, [rows, slicers, activeSlicer, query, filters, multiFilters, columns])
+  const filteredRows = useMemo(
+    () => rows.filter(row => rowMatchesFilters(row)),
+    [rows, rowMatchesFilters]
+  )
 
   const sortedRows = useMemo(() => {
     if (!sort) return filteredRows
