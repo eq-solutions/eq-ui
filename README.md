@@ -404,7 +404,7 @@ Generic over row type `T`.
 | `render` | `(row: T) => ReactNode` | Optional cell renderer. Defaults to `String(row[key])` |
 | `sortAccessor` | `(row: T) => string \| number \| null \| undefined` | Value to sort by. Omit to use `row[key]` directly |
 | `sortable` | `false` | Set to disable sorting on this column |
-| `filterable` | `'text' \| 'select'` | Enable a filter input under the header |
+| `filterable` | `'text' \| 'select' \| 'multiselect'` | Enable a filter input under the header. `'multiselect'` renders an Excel-style filter icon in the header instead — a popover with search, Select All/Reset, and a checkbox list |
 | `filterOptions` | `{ value: string; label: string }[]` | Explicit select options (auto-detected from data when omitted) |
 | `className` | `string` | CSS class on every `<td>` in this column |
 | `width` | `string \| number` | Fixed column width |

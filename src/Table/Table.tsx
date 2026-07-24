@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import {
   Search, Download, Columns, Check, ChevronRight, ChevronUp, ChevronDown,
-  ChevronsUpDown, X, ChevronLeft, Archive, Trash2,
+  ChevronsUpDown, X, ChevronLeft, Archive, Trash2, Filter,
 } from 'lucide-react'
 import { Skeleton } from '../Skeleton/Skeleton'
 import { ConfirmDialog } from '../Modal/ConfirmDialog'
@@ -15,7 +15,12 @@ export interface TableColumn<T> {
   render?: (row: T) => React.ReactNode
   sortAccessor?: (row: T) => string | number | null | undefined
   sortable?: false
-  filterable?: 'text' | 'select'
+  /**
+   * `'multiselect'` renders an Excel-style filter icon in the column header —
+   * a popover with a search box, Select All / Reset, and a checkbox list of
+   * unique values — instead of the single-value `<select>` in the filter row.
+   */
+  filterable?: 'text' | 'select' | 'multiselect'
   filterOptions?: { value: string; label: string }[]
   className?: string
   width?: string | number
@@ -296,7 +301,7 @@ export function Table<T>({
   }
 
   // ── Per-column filters ─────────────────────────────────────────────────
-  const hasColumnFilters = columns.some(c => c.filterable)
+  const hasColumnFilters = columns.some(c => c.filterable === 'text' || c.filterable === 'select')
   const [filters, setFilters] = useState<Record<string, string>>({})
   function setFilter(key: string, value: string) {
     setFilters(prev => {
@@ -309,7 +314,7 @@ export function Table<T>({
   const autoSelectOptions = useMemo(() => {
     const opts: Record<string, { value: string; label: string }[]> = {}
     for (const col of columns) {
-      if (col.filterable === 'select' && !col.filterOptions) {
+      if ((col.filterable === 'select' || col.filterable === 'multiselect') && !col.filterOptions) {
         const seen = new Set<string>()
         for (const row of rows) {
           const val = String((row as Record<string, unknown>)[col.key] ?? '').trim()
@@ -320,6 +325,51 @@ export function Table<T>({
     }
     return opts
   }, [columns, rows])
+
+  // ── Multi-select (Excel-style) header filters ──────────────────────────
+  const [multiFilters, setMultiFilters] = useState<Record<string, Set<string>>>({})
+  function toggleMultiFilterValue(key: string, value: string) {
+    setMultiFilters(prev => {
+      const next = { ...prev }
+      const set = new Set(next[key] ?? [])
+      if (set.has(value)) set.delete(value)
+      else set.add(value)
+      if (set.size === 0) delete next[key]
+      else next[key] = set
+      return next
+    })
+  }
+  function setMultiFilterAll(key: string, values: string[], checked: boolean) {
+    setMultiFilters(prev => {
+      const next = { ...prev }
+      if (checked) next[key] = new Set(values)
+      else delete next[key]
+      return next
+    })
+  }
+  function clearMultiFilter(key: string) {
+    setMultiFilters(prev => {
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+  }
+
+  const [openFilterMenu, setOpenFilterMenu] = useState<string | null>(null)
+  const [filterMenuSearch, setFilterMenuSearch] = useState('')
+  const filterMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!openFilterMenu) return
+    function onOutside(e: MouseEvent) {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node)) {
+        setOpenFilterMenu(null)
+        setFilterMenuSearch('')
+      }
+    }
+    document.addEventListener('mousedown', onOutside)
+    return () => document.removeEventListener('mousedown', onOutside)
+  }, [openFilterMenu])
 
   // ── Slicer ─────────────────────────────────────────────────────────────
   const defaultSlicerKey = slicers?.[0]?.key ?? 'all'
@@ -432,8 +482,21 @@ export function Table<T>({
       })
     }
 
+    // multi-select header filters (Excel-style checklist)
+    if (Object.keys(multiFilters).length > 0) {
+      r = r.filter(row => {
+        for (const [key, valueSet] of Object.entries(multiFilters)) {
+          if (!valueSet || valueSet.size === 0) continue
+          const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
+          const matches = Array.from(valueSet).some(v => v.toLowerCase() === cellVal)
+          if (!matches) return false
+        }
+        return true
+      })
+    }
+
     return r
-  }, [rows, slicers, activeSlicer, query, filters, columns])
+  }, [rows, slicers, activeSlicer, query, filters, multiFilters, columns])
 
   const sortedRows = useMemo(() => {
     if (!sort) return filteredRows
@@ -459,7 +522,7 @@ export function Table<T>({
   const totalCount = pagination?.totalCount ?? sortedRows.length
   const totalPages = pagination ? Math.max(1, Math.ceil(sortedRows.length / pageSize)) : 1
 
-  useEffect(() => { setPage(1) }, [query, activeSlicer, filters])
+  useEffect(() => { setPage(1) }, [query, activeSlicer, filters, multiFilters])
 
   const pagedRows = useMemo(() => {
     if (!pagination) return sortedRows
@@ -584,7 +647,7 @@ export function Table<T>({
   // ── Toolbar visibility ─────────────────────────────────────────────────
   const hasToolbar = !!(slicers || globalSearch || columnToggle || exportable)
   const showFooter = !!(summaryNode || (pagination && totalPages > 1))
-  const activeFilterCount = Object.keys(filters).length + (query ? 1 : 0)
+  const activeFilterCount = Object.keys(filters).length + Object.keys(multiFilters).length + (query ? 1 : 0)
 
   const wrapClass = ['eq-table-wrap', className].filter(Boolean).join(' ')
 
@@ -728,6 +791,15 @@ export function Table<T>({
               {visibleCols.map(col => {
                 const isSortable = col.sortable !== false
                 const isSorted = sort?.key === col.key
+                const isMultiFilter = col.filterable === 'multiselect'
+                const activeMultiCount = multiFilters[col.key]?.size ?? 0
+                const menuOpen = openFilterMenu === col.key
+                const filterOpts = col.filterOptions ?? autoSelectOptions[col.key] ?? []
+                const visibleOpts = filterMenuSearch.trim() && menuOpen
+                  ? filterOpts.filter(o => o.label.toLowerCase().includes(filterMenuSearch.toLowerCase()))
+                  : filterOpts
+                const selectedVals = multiFilters[col.key] ?? new Set<string>()
+                const allVisibleChecked = visibleOpts.length > 0 && visibleOpts.every(o => selectedVals.has(o.value))
                 return (
                   <th
                     key={col.key}
@@ -744,6 +816,86 @@ export function Table<T>({
                           {isSorted
                             ? (sort!.dir === 'asc' ? <ChevronUp size={13} /> : <ChevronDown size={13} />)
                             : <ChevronsUpDown size={13} />}
+                        </span>
+                      )}
+                      {isMultiFilter && (
+                        <span
+                          className="eq-table__th-filter-wrap"
+                          ref={menuOpen ? filterMenuRef : undefined}
+                        >
+                          <button
+                            type="button"
+                            className={`eq-table__th-filter-btn${activeMultiCount > 0 ? ' eq-table__th-filter-btn--active' : ''}`}
+                            aria-label={`Filter by ${col.header}`}
+                            aria-haspopup="true"
+                            aria-expanded={menuOpen}
+                            onClick={e => {
+                              e.stopPropagation()
+                              setFilterMenuSearch('')
+                              setOpenFilterMenu(prev => prev === col.key ? null : col.key)
+                            }}
+                          >
+                            <Filter size={12} aria-hidden="true" />
+                            {activeMultiCount > 0 && (
+                              <span className="eq-table__th-filter-count">{activeMultiCount}</span>
+                            )}
+                          </button>
+                          {menuOpen && (
+                            <div
+                              className="eq-table__filter-menu"
+                              role="menu"
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <div className="eq-table__filter-menu-search">
+                                <Search size={13} aria-hidden="true" />
+                                <input
+                                  type="text"
+                                  autoFocus
+                                  placeholder="Search…"
+                                  value={filterMenuSearch}
+                                  onChange={e => setFilterMenuSearch(e.target.value)}
+                                  aria-label={`Search ${col.header} values`}
+                                />
+                              </div>
+                              <div className="eq-table__filter-menu-actions">
+                                <button
+                                  type="button"
+                                  onClick={() => setMultiFilterAll(col.key, visibleOpts.map(o => o.value), !allVisibleChecked)}
+                                  disabled={visibleOpts.length === 0}
+                                >
+                                  {allVisibleChecked ? 'Deselect all' : 'Select all'}
+                                </button>
+                                {selectedVals.size > 0 && (
+                                  <button type="button" onClick={() => clearMultiFilter(col.key)}>
+                                    Reset
+                                  </button>
+                                )}
+                              </div>
+                              <div className="eq-table__filter-menu-list">
+                                {visibleOpts.length === 0 ? (
+                                  <div className="eq-table__filter-menu-empty">No matches</div>
+                                ) : visibleOpts.map(opt => {
+                                  const checked = selectedVals.has(opt.value)
+                                  return (
+                                    <label key={opt.value} className="eq-table__filter-menu-row">
+                                      <span
+                                        className={`eq-table__filter-menu-check${checked ? ' eq-table__filter-menu-check--on' : ''}`}
+                                        aria-hidden="true"
+                                      >
+                                        {checked && <Check size={11} />}
+                                      </span>
+                                      <input
+                                        type="checkbox"
+                                        checked={checked}
+                                        onChange={() => toggleMultiFilterValue(col.key, opt.value)}
+                                      />
+                                      <span>{opt.label}</span>
+                                    </label>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </span>
                       )}
                     </span>
