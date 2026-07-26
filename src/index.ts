@@ -68,6 +68,18 @@ export type {
 export { DropdownMenu } from './DropdownMenu/DropdownMenu'
 export type { DropdownMenuProps, DropdownMenuEntry, DropdownMenuItemDef, DropdownMenuSeparatorDef } from './DropdownMenu/DropdownMenu'
 
+// EmptyState
+export { EmptyState } from './EmptyState/EmptyState'
+export type { EmptyStateProps } from './EmptyState/EmptyState'
+
+// Pagination
+export { Pagination } from './Pagination/Pagination'
+export type { PaginationProps } from './Pagination/Pagination'
+
+// Tooltip
+export { Tooltip } from './Tooltip/Tooltip'
+export type { TooltipProps, TooltipPlacement } from './Tooltip/Tooltip'
+
 // AppShell — layout chrome (sidebar, icon rail, layout wrapper)
 export { AppShell, AppSidebar, AppRail } from './AppShell/index'
 export type {

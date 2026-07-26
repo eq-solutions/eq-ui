@@ -80,6 +80,18 @@
       "types": "./src/DropdownMenu/DropdownMenu.tsx",
       "default": "./src/DropdownMenu/DropdownMenu.tsx"
     },
+    "./EmptyState": {
+      "types": "./src/EmptyState/EmptyState.tsx",
+      "default": "./src/EmptyState/EmptyState.tsx"
+    },
+    "./Pagination": {
+      "types": "./src/Pagination/Pagination.tsx",
+      "default": "./src/Pagination/Pagination.tsx"
+    },
+    "./Tooltip": {
+      "types": "./src/Tooltip/Tooltip.tsx",
+      "default": "./src/Tooltip/Tooltip.tsx"
+    },
     "./AppShell": {
       "types": "./src/AppShell/index.ts",
       "default": "./src/AppShell/index.ts"

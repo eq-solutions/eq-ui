@@ -1,0 +1,64 @@
+/*
+ * @eq-solutions/ui — Pagination
+ *
+ * All colours, radii, spacing reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--eq-space-1);
+  font-family: var(--eq-font-stack);
+}
+
+.eq-pagination__nav,
+.eq-pagination__page {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--eq-radius-input);
+  border: var(--eq-border-width) solid var(--eq-border-color);
+  background-color: var(--eq-white);
+  color: var(--eq-ink);
+  font-size: var(--eq-text-sm);
+  font-weight: var(--eq-weight-semi);
+  cursor: pointer;
+  transition: background-color var(--eq-duration-default) var(--eq-ease),
+              border-color var(--eq-duration-default) var(--eq-ease),
+              color var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-pagination__nav:hover:not(:disabled),
+.eq-pagination__page:hover:not(.eq-pagination__page--active) {
+  background-color: var(--eq-gray-50);
+}
+
+.eq-pagination__nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.eq-pagination__page--active {
+  background-color: var(--eq-sky);
+  border-color: var(--eq-sky);
+  color: var(--eq-white);
+  cursor: default;
+}
+
+.eq-pagination__ellipsis {
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--eq-grey);
+  font-size: var(--eq-text-sm);
+}
+
+.eq-pagination__nav:focus-visible,
+.eq-pagination__page:focus-visible {
+  box-shadow: var(--eq-focus-ring);
+  outline: none;
+}
