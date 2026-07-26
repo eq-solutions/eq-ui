@@ -1,0 +1,77 @@
+/* Gallery scaffolding only — never component styling, that lives in src/. */
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--eq-ice, #eaf5fb);
+  color: var(--eq-ink, #1a1a2e);
+}
+
+.ks-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.ks-header p {
+  color: var(--eq-ink, #1a1a2e);
+  opacity: 0.7;
+  max-width: 640px;
+}
+
+.ks-section {
+  margin-top: 2.5rem;
+}
+
+.ks-section__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin: 0 0 0.75rem;
+}
+
+.ks-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ks-note {
+  font-size: 0.85rem;
+  opacity: 0.65;
+  margin: 0.75rem 0;
+}
+
+.ks-spinner-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.ks-spinner-cell--inverted {
+  background: var(--eq-sky, #3da8d8);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: white;
+}
+
+.ks-shell-box {
+  height: 420px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--eq-line, #d6e4ec);
+  position: relative;
+}
+
+.ks-shell-box .eq-hub__sidebar {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}

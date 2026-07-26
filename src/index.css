@@ -19,6 +19,7 @@
 /* ── 2. Component styles (alphabetical) ──────────────────────────────────── */
 @import "./Button/Button.css";
 @import "./Card/Card.css";
+@import "./DropdownMenu/DropdownMenu.css";
 @import "./FormInput/FormInput.css";
 @import "./KindPill/KindPill.css";
 @import "./Modal/Modal.css";
