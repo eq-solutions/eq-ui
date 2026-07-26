@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.12.0
+
+### Minor Changes
+
+- b8a0304: Add Tooltip, EmptyState, and Pagination components. Each follows existing
+  eq-ui conventions (--eq-\* tokens only, forwardRef/rest-prop spreading where
+  applicable, axe-tested) and closes gaps found while building a full
+  component kitchen-sink reference against the EQ design system.
+
+### Patch Changes
+
+- 95e821b: Fix Tabs arrow-key navigation not moving actual keyboard focus (roving tabindex was updating ARIA state but stranding DOM focus on the previously-active tab). Add keyboard support to Table's column-visibility menu item, matching the pattern already used by its row-selection checkboxes. Add ESLint + `eslint-plugin-jsx-a11y` to CI. Add test coverage (behavior + accessibility) for DropdownMenu, Tabs, Toast, and AppShell.
+- 29c10b4: Add a `demo/` kitchen-sink page (`npm run dev`, Vite) previewing every component's variants for quick visual review during development — dev-only, not part of the published package. Fixed a real bug found while building it: `src/index.css` (the barrel stylesheet) was missing `DropdownMenu.css`, so any app importing styles via the barrel rather than per-component would get an unstyled dropdown menu.
+
 ## 1.11.1
 
 ### Patch Changes
