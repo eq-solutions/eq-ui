@@ -1,0 +1,56 @@
+/*
+ * @eq-solutions/ui — Tooltip
+ *
+ * All colours, radii, spacing, shadow reference --eq-* custom properties
+ * from @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.eq-tooltip__bubble {
+  position: absolute;
+  z-index: 20;
+  background-color: var(--eq-ink);
+  color: var(--eq-white);
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-xs);
+  font-weight: var(--eq-weight-medium);
+  padding: var(--eq-space-2) var(--eq-space-3);
+  border-radius: var(--eq-radius-input);
+  white-space: nowrap;
+  box-shadow: var(--eq-shadow-lg);
+  pointer-events: none;
+  animation: eq-tooltip-in var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-tooltip__bubble--top {
+  bottom: calc(100% + var(--eq-space-2));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.eq-tooltip__bubble--bottom {
+  top: calc(100% + var(--eq-space-2));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.eq-tooltip__bubble--left {
+  right: calc(100% + var(--eq-space-2));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.eq-tooltip__bubble--right {
+  left: calc(100% + var(--eq-space-2));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes eq-tooltip-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

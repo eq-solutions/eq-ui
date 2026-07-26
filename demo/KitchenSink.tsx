@@ -14,6 +14,9 @@ import { Spinner, type SpinnerVariant } from '../src/Spinner/Spinner'
 import { Table, type TableColumn } from '../src/Table/Table'
 import { DropdownMenu } from '../src/DropdownMenu/DropdownMenu'
 import { AppSidebar, type AppSidebarSection } from '../src/AppShell/index'
+import { Tooltip } from '../src/Tooltip/Tooltip'
+import { EmptyState } from '../src/EmptyState/EmptyState'
+import { Pagination } from '../src/Pagination/Pagination'
 
 const VARIANTS = ['primary', 'secondary', 'ghost', 'danger'] as const
 const SIZES = ['sm', 'md', 'lg'] as const
@@ -78,6 +81,7 @@ export function KitchenSink() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [tab, setTab] = useState('all')
   const [inputValue, setInputValue] = useState('')
+  const [paginationPage, setPaginationPage] = useState(1)
 
   return (
     <main className="ks-page">
@@ -238,6 +242,17 @@ export function KitchenSink() {
         </Row>
       </Section>
 
+      <Section title="Tooltip">
+        <Row>
+          <Tooltip content="Runs a compliance check">
+            <Button variant="secondary" size="sm">Hover me</Button>
+          </Tooltip>
+          <Tooltip content="Last synced 2 min ago" placement="bottom">
+            <Button variant="ghost" size="sm">Sync now</Button>
+          </Tooltip>
+        </Row>
+      </Section>
+
       <Section title="Table">
         <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} />
         <p className="ks-note">Loading state (SkeletonRows), rendered standalone below:</p>
@@ -246,6 +261,18 @@ export function KitchenSink() {
             <SkeletonRows count={3} columns={3} />
           </tbody>
         </table>
+      </Section>
+
+      <Section title="Pagination">
+        <Pagination page={paginationPage} pageCount={12} onPageChange={setPaginationPage} />
+      </Section>
+
+      <Section title="EmptyState">
+        <EmptyState
+          title="No job numbers added yet"
+          description="Job numbers you add will show up here for the whole team."
+          action={<Button size="sm">Add job number</Button>}
+        />
       </Section>
 
       <Section title="DropdownMenu">
