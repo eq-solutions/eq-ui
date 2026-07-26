@@ -6,6 +6,10 @@ Releases are automated with [Changesets](https://github.com/changesets/changeset
 
 1. Land PRs that include a changeset (`npx changeset`). The `check` workflow
    gates every PR on `tsc` + `check:tokens` and on a changeset being present.
+   If the PR touches a component with a known hand-port in a build-less
+   consumer (currently: Spinner, hand-ported in `eq-field/styles/spinner.css`),
+   call that out in the changeset so the hand-port gets updated too — no CI
+   check enforces this, it relies on the PR author flagging it.
 2. On push to `main`, `.github/workflows/release.yml` runs `changesets/action`:
    - If unreleased changesets exist, it opens/updates a **"chore: version
      packages"** PR on the `changeset-release/main` branch.
