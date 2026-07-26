@@ -69,6 +69,11 @@ export function DropdownMenu({ trigger, items, align = 'right' }: DropdownMenuPr
 
   return (
     <div className="eq-dropdown" ref={wrapRef}>
+      {/* `trigger` is documented + expected to be a native focusable control (e.g. a
+          <button>); keyboard activation already works via native click-on-Enter/Space
+          bubbling up to this wrapper. Adding our own onKeyDown here would double-fire
+          for any trigger that already handles its own keyboard activation. */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div
         onClick={(e) => { e.stopPropagation(); setOpen((o) => !o) }}
         className="eq-dropdown__trigger"
