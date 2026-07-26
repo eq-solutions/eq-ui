@@ -506,6 +506,13 @@ The token-only invariant is **enforced in CI**, not just by review:
 - All sizing uses token-defined spacing and radius variables.
 - Deliberate exceptions carry a `token-guard-allow` comment on the line.
 
+## Local preview
+
+`npm run dev` starts a Vite dev server (`demo/`) rendering every component with a
+few representative variants each — a quick visual sanity check while developing,
+not a substitute for the tests in each component's `*.test.tsx`. Dev-only; not
+part of the published package.
+
 ## Related
 
 - [`eq-solutions/eq-design-tokens`](https://github.com/eq-solutions/eq-design-tokens) — `@eq-solutions/tokens`. CSS, TS, Tailwind preset, Flutter Dart.
