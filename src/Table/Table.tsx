@@ -412,7 +412,8 @@ export function Table<T>({
   function toggleCol(key: string) {
     setHiddenCols(prev => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
       if (persistKey) {
         try {
           window.localStorage.setItem(`eq-table-hidden-cols:${persistKey}`, JSON.stringify([...next]))
@@ -548,7 +549,8 @@ export function Table<T>({
   function toggleRow(id: string) {
     if (!effectiveOnSelChange || !effectiveSelectedIds) return
     const next = new Set(effectiveSelectedIds)
-    next.has(id) ? next.delete(id) : next.add(id)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
     effectiveOnSelChange(next)
   }
 
@@ -724,7 +726,14 @@ export function Table<T>({
                           ].filter(Boolean).join(' ')}
                           role="menuitemcheckbox"
                           aria-checked={isVisible}
+                          tabIndex={col.locked ? -1 : 0}
                           onClick={() => !col.locked && toggleCol(col.key)}
+                          onKeyDown={e => {
+                            if ((e.key === ' ' || e.key === 'Enter') && !col.locked) {
+                              e.preventDefault()
+                              toggleCol(col.key)
+                            }
+                          }}
                         >
                           <span className="eq-table-poprow__check" aria-hidden="true">
                             <Check size={12} />
@@ -837,6 +846,11 @@ export function Table<T>({
                             )}
                           </button>
                           {menuOpen && (
+                            // ARIA menu containers (role="menu") aren't themselves focusable per
+                            // the APG — only menuitems are, via roving tabindex. This div's only
+                            // handler stops propagation to the row's onClick; it doesn't itself
+                            // perform an action.
+                            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
                             <div
                               className="eq-table__filter-menu"
                               role="menu"
@@ -844,8 +858,12 @@ export function Table<T>({
                             >
                               <div className="eq-table__filter-menu-search">
                                 <Search size={13} aria-hidden="true" />
+                                {/* Focus-follows-action: this input only mounts when the user
+                                    explicitly clicks the Filter button, not on page load, so
+                                    there's no disorienting ambient focus jump. */}
                                 <input
                                   type="text"
+                                  // eslint-disable-next-line jsx-a11y/no-autofocus
                                   autoFocus
                                   placeholder="Search…"
                                   value={filterMenuSearch}

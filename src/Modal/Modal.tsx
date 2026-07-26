@@ -117,6 +117,9 @@ export function Modal({
   if (!open || typeof document === 'undefined') return null
 
   return createPortal(
+    // Mouse-only dismiss convenience; the dialog itself already has full keyboard
+    // support (Escape via the document listener above, Tab focus-trap below).
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       className="eq-modal__backdrop"
       onMouseDown={(e) => {

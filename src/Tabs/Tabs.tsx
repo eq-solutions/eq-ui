@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import './Tabs.css'
 
 export interface TabItem {
@@ -52,12 +52,18 @@ export function Tabs({
   className,
   ['aria-label']: ariaLabel,
 }: TabsProps) {
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+
   function moveFocus(currentIdx: number, dir: 1 | -1) {
     const n = items.length
     for (let step = 1; step <= n; step++) {
       const next = items[(currentIdx + dir * step + n) % n]
       if (!next.disabled) {
         onChange(next.key)
+        // Roving tabindex: the newly-active tab becomes the only tabbable one
+        // (tabIndex 0 below), so keyboard focus must follow the selection —
+        // otherwise focus is stranded on a now tabIndex=-1 button.
+        tabRefs.current[next.key]?.focus()
         break
       }
     }
@@ -82,6 +88,7 @@ export function Tabs({
         return (
           <button
             key={item.key}
+            ref={(el) => { tabRefs.current[item.key] = el }}
             type="button"
             role="tab"
             aria-selected={active}
