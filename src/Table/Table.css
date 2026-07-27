@@ -282,10 +282,53 @@
   color: var(--eq-white);
 }
 
+.eq-table-poprow__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .eq-table-poprow__pinned {
   margin-left: auto;
   font-size: var(--eq-text-xs);
   color: var(--eq-gray-400);
+  flex-shrink: 0;
+}
+
+.eq-table-poprow__reorder {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.eq-table-poprow__reorder-btn {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  width: 16px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--eq-gray-400);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: color var(--eq-duration-default) var(--eq-ease),
+              background var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-table-poprow__reorder-btn:hover:not(:disabled) {
+  color: var(--eq-ink);
+  background: var(--eq-gray-100);
+}
+
+.eq-table-poprow__reorder-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 /* ── Table card shell (zones D + E + F + G) ────────────────────────── */
