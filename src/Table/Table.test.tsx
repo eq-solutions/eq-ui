@@ -27,6 +27,91 @@ const columns: TableColumn<Row>[] = [
   { key: 'plan', header: 'Plan', filterable: 'multiselect' },
 ]
 
+describe('Table — column reorder', () => {
+  it('moving a column down changes the rendered header order', async () => {
+    const user = userEvent.setup()
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} columnToggle />)
+
+    await user.click(screen.getByRole('button', { name: 'Columns' }))
+    await user.click(screen.getByRole('button', { name: 'Move Location down' }))
+
+    const headers = screen.getAllByRole('columnheader').map(h => h.textContent)
+    expect(headers.indexOf('Work Order')).toBeLessThan(headers.indexOf('Location'))
+  })
+
+  it('boundary move buttons are disabled at the ends', async () => {
+    const user = userEvent.setup()
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} columnToggle />)
+
+    await user.click(screen.getByRole('button', { name: 'Columns' }))
+    expect(screen.getByRole('button', { name: 'Move Location up' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Move Plan down' })).toBeDisabled()
+  })
+})
+
+describe('Table — composite column filterValue/exportValue', () => {
+  interface ContactRow {
+    id: string
+    name: string
+    phone: string | null
+    email: string | null
+  }
+
+  const contactRows: ContactRow[] = [
+    { id: '1', name: 'Ann', phone: '0412345678', email: 'ann@example.com' },
+    { id: '2', name: 'Bo', phone: null, email: 'bo@example.com' },
+  ]
+
+  const contactColumns: TableColumn<ContactRow>[] = [
+    { key: 'name', header: 'Name' },
+    {
+      key: 'contact',
+      header: 'Contact',
+      filterable: 'text',
+      filterValue: row => [row.phone, row.email].filter(Boolean).join(' '),
+      exportValue: row => [row.phone, row.email].filter(Boolean).join(' | '),
+      render: row => <>{row.phone}{row.email}</>,
+    },
+  ]
+
+  it('global search matches against filterValue, not row[key]', async () => {
+    const user = userEvent.setup()
+    render(<Table rows={contactRows} columns={contactColumns} getRowId={r => r.id} globalSearch />)
+
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), '0412345678')
+    const table = screen.getByRole('table')
+    expect(within(table).queryByText('Ann')).toBeTruthy()
+    expect(within(table).queryByText('Bo')).toBeNull()
+  })
+
+  it('CSV export uses exportValue for composite columns', async () => {
+    const originalCreateObjectURL = URL.createObjectURL
+    const originalRevoke = URL.revokeObjectURL
+    let capturedBlob: Blob | null = null
+    URL.createObjectURL = (blob: Blob) => { capturedBlob = blob; return 'blob:mock' }
+    URL.revokeObjectURL = () => {}
+    const originalClick = HTMLAnchorElement.prototype.click
+    HTMLAnchorElement.prototype.click = function () {}
+
+    render(<Table rows={contactRows} columns={contactColumns} getRowId={r => r.id} exportable />)
+    screen.getByRole('button', { name: /Export/ }).click()
+
+    expect(capturedBlob).not.toBeNull()
+    const csv = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = reject
+      reader.readAsText(capturedBlob!)
+    })
+    expect(csv).toContain('0412345678 | ann@example.com')
+    expect(csv).toContain('"Bo","bo@example.com"')
+
+    URL.createObjectURL = originalCreateObjectURL
+    URL.revokeObjectURL = originalRevoke
+    HTMLAnchorElement.prototype.click = originalClick
+  })
+})
+
 describe('Table — multiselect header filter', () => {
   it('narrows rows to the OR of checked values within a column', async () => {
     const user = userEvent.setup()

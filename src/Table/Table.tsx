@@ -27,6 +27,19 @@ export interface TableColumn<T> {
   align?: 'left' | 'right' | 'center'
   /** Prevent this column from being hidden via the column-toggle popover. */
   locked?: boolean
+  /**
+   * Override what global search and the `'text'` per-column filter match
+   * against, for composite columns whose display doesn't come from a single
+   * `row[key]` (e.g. a merged "Contact" column built from phone + email).
+   * Falls back to `row[key]` when omitted.
+   */
+  filterValue?: (row: T) => string | null | undefined
+  /**
+   * Override the value written to the CSV export for this column. Falls
+   * back to `row[key]` when omitted — set this for composite columns
+   * (see `filterValue`) so export isn't left blank.
+   */
+  exportValue?: (row: T) => string
 }
 
 // ── Slicer definition ──────────────────────────────────────────────────────
@@ -189,7 +202,7 @@ function exportToCsv<T>(
   const headers = columns.map(c => `"${c.header.replace(/"/g, '""')}"`)
   const body = rows.map(row =>
     columns.map(col => {
-      const raw = (row as Record<string, unknown>)[col.key]
+      const raw = col.exportValue ? col.exportValue(row) : (row as Record<string, unknown>)[col.key]
       const val = raw == null ? '' : String(raw)
       return `"${val.replace(/"/g, '""')}"`
     }).join(',')
@@ -425,9 +438,61 @@ export function Table<T>({
     })
   }
 
+  // ── Column order ─────────────────────────────────────────────────────
+  const [colOrder, setColOrder] = useState<string[]>(() => {
+    const defaultOrder = columns.map(c => c.key)
+    if (persistKey) {
+      try {
+        const stored = window.localStorage.getItem(`eq-table-col-order:${persistKey}`)
+        if (stored) {
+          const storedOrder = JSON.parse(stored) as string[]
+          const known = new Set(defaultOrder)
+          const kept = storedOrder.filter(k => known.has(k))
+          const missing = defaultOrder.filter(k => !kept.includes(k))
+          return [...kept, ...missing]
+        }
+      } catch {
+        // localStorage unavailable — fall through to default
+      }
+    }
+    return defaultOrder
+  })
+
+  // Columns not yet seen in colOrder (added to the `columns` prop after the
+  // user's stored order was captured) are appended at the end, in prop order.
+  const orderedColumns = useMemo(() => {
+    const remaining = new Map(columns.map(c => [c.key, c]))
+    const ordered: TableColumn<T>[] = []
+    for (const key of colOrder) {
+      const col = remaining.get(key)
+      if (col) { ordered.push(col); remaining.delete(key) }
+    }
+    for (const col of columns) {
+      if (remaining.has(col.key)) ordered.push(col)
+    }
+    return ordered
+  }, [columns, colOrder])
+
+  function moveColumn(key: string, direction: -1 | 1) {
+    const keys = orderedColumns.map(c => c.key)
+    const idx = keys.indexOf(key)
+    const swapIdx = idx + direction
+    if (idx === -1 || swapIdx < 0 || swapIdx >= keys.length) return
+    const next = [...keys]
+    ;[next[idx], next[swapIdx]] = [next[swapIdx], next[idx]]
+    if (persistKey) {
+      try {
+        window.localStorage.setItem(`eq-table-col-order:${persistKey}`, JSON.stringify(next))
+      } catch {
+        // localStorage unavailable — order still updates for this session
+      }
+    }
+    setColOrder(next)
+  }
+
   const visibleCols = useMemo(
-    () => columns.filter(c => !hiddenCols.has(c.key)),
-    [columns, hiddenCols]
+    () => orderedColumns.filter(c => !hiddenCols.has(c.key)),
+    [orderedColumns, hiddenCols]
   )
 
   // ── Filter pipeline: slicer → search → per-column → sort ──────────────
@@ -446,7 +511,7 @@ export function Table<T>({
     if (query.trim()) {
       const q = query.toLowerCase()
       const matches = columns.some(col => {
-        const val = (row as Record<string, unknown>)[col.key]
+        const val = col.filterValue ? col.filterValue(row) : (row as Record<string, unknown>)[col.key]
         return val != null && String(val).toLowerCase().includes(q)
       })
       if (!matches) return false
@@ -455,7 +520,8 @@ export function Table<T>({
     for (const [key, filterVal] of Object.entries(filters)) {
       const col = columns.find(c => c.key === key)
       if (!col) continue
-      const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
+      const rawVal = col.filterValue ? col.filterValue(row) : (row as Record<string, unknown>)[key]
+      const cellVal = String(rawVal ?? '').toLowerCase()
       if (col.filterable === 'select') {
         if (cellVal !== filterVal.toLowerCase()) return false
       } else {
@@ -714,7 +780,7 @@ export function Table<T>({
                 {colsMenuOpen && (
                   <div className="eq-table-popover" role="menu">
                     <div className="eq-table-popover__header">Show columns</div>
-                    {columns.map(col => {
+                    {orderedColumns.map((col, colIdx) => {
                       const isVisible = !hiddenCols.has(col.key)
                       return (
                         <div
@@ -738,10 +804,30 @@ export function Table<T>({
                           <span className="eq-table-poprow__check" aria-hidden="true">
                             <Check size={12} />
                           </span>
-                          <span>{col.header}</span>
+                          <span className="eq-table-poprow__label">{col.header}</span>
                           {col.locked && (
                             <span className="eq-table-poprow__pinned">Pinned</span>
                           )}
+                          <span className="eq-table-poprow__reorder">
+                            <button
+                              type="button"
+                              className="eq-table-poprow__reorder-btn"
+                              aria-label={`Move ${col.header} up`}
+                              disabled={colIdx === 0}
+                              onClick={e => { e.stopPropagation(); moveColumn(col.key, -1) }}
+                            >
+                              <ChevronUp size={12} aria-hidden="true" />
+                            </button>
+                            <button
+                              type="button"
+                              className="eq-table-poprow__reorder-btn"
+                              aria-label={`Move ${col.header} down`}
+                              disabled={colIdx === orderedColumns.length - 1}
+                              onClick={e => { e.stopPropagation(); moveColumn(col.key, 1) }}
+                            >
+                              <ChevronDown size={12} aria-hidden="true" />
+                            </button>
+                          </span>
                         </div>
                       )
                     })}
