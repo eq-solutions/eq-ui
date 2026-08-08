@@ -31,4 +31,38 @@ describe('EmptyState', () => {
     const results = await axe(container)
     expect(results.violations).toEqual([])
   })
+
+  it('defaults to the default variant with no icon', () => {
+    const { container } = render(<EmptyState title="Nothing here" />)
+    expect(container.querySelector('.eq-empty')).toHaveAttribute('data-variant', 'default')
+    expect(container.querySelector('.eq-empty__icon')).not.toBeInTheDocument()
+  })
+
+  it.each(['filtered', 'error', 'no-access'] as const)(
+    'renders a default icon for the %s variant',
+    (variant) => {
+      const { container } = render(<EmptyState variant={variant} title="Nothing here" />)
+      expect(container.querySelector('.eq-empty')).toHaveAttribute('data-variant', variant)
+      expect(container.querySelector('.eq-empty__icon')).toBeInTheDocument()
+    }
+  )
+
+  it('lets an explicit icon override the variant default', () => {
+    render(
+      <EmptyState variant="error" icon={<span data-testid="custom-icon" />} title="Nothing here" />
+    )
+    expect(screen.getByTestId('custom-icon')).toBeInTheDocument()
+  })
+
+  it('has no detectable accessibility violations for the error variant', async () => {
+    const { container } = render(
+      <EmptyState
+        variant="error"
+        title="Couldn't load job numbers"
+        action={<button>Try again</button>}
+      />
+    )
+    const results = await axe(container)
+    expect(results.violations).toEqual([])
+  })
 })

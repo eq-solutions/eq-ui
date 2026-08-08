@@ -91,4 +91,16 @@ describe('DropdownMenu', () => {
     const results = await axe(container)
     expect(results.violations).toEqual([])
   })
+
+  it('defaults to comfortable density and accepts compact', () => {
+    const { container, rerender } = render(
+      <DropdownMenu trigger={<button aria-label="More">⋯</button>} items={items} />
+    )
+    expect(container.querySelector('.eq-dropdown')).toHaveAttribute('data-density', 'comfortable')
+
+    rerender(
+      <DropdownMenu trigger={<button aria-label="More">⋯</button>} items={items} density="compact" />
+    )
+    expect(container.querySelector('.eq-dropdown')).toHaveAttribute('data-density', 'compact')
+  })
 })

@@ -96,6 +96,10 @@
       "types": "./src/AppShell/index.ts",
       "default": "./src/AppShell/index.ts"
     },
+    "./DateRangePicker": {
+      "types": "./src/DateRangePicker/DateRangePicker.tsx",
+      "default": "./src/DateRangePicker/DateRangePicker.tsx"
+    },
     "./styles": {
       "style": "./src/index.css",
       "default": "./src/index.css"

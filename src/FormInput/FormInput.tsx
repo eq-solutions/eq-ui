@@ -12,6 +12,8 @@ export interface FormInputProps
   error?: string
   /** Helper text shown below the input. Hidden while an `error` is present. */
   hint?: string
+  /** Field height and label/input spacing. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
 }
 
 /**
@@ -31,10 +33,13 @@ export interface FormInputProps
  *
  * // error state
  * <FormInput label="PIN" error="That PIN doesn't match." />
+ *
+ * // compact — dense Field surfaces
+ * <FormInput label="PIN" density="compact" />
  */
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   function FormInput(
-    { label, error, hint, id, className, disabled, ...props },
+    { label, error, hint, density = 'comfortable', id, className, disabled, ...props },
     ref
   ) {
     const autoId = useId()
@@ -51,7 +56,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       .join(' ')
 
     return (
-      <div className={wrapClass} data-disabled={disabled || undefined}>
+      <div className={wrapClass} data-disabled={disabled || undefined} data-density={density}>
         {label && (
           <label className="eq-field__label" htmlFor={inputId}>
             {label}

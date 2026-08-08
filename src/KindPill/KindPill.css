@@ -48,3 +48,9 @@
   border-color: var(--eq-gray-300);
 }
 .eq-kind--inspection .eq-kind__dot { background-color: var(--eq-gray-600); }
+
+/* Density */
+.eq-kind[data-density="compact"] {
+  padding: 2px var(--eq-space-1);
+  gap: var(--eq-space-1);
+}

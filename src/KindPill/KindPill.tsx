@@ -14,6 +14,8 @@ export interface KindPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   kind: WorkKind
   /** Override the default label text for the kind. */
   label?: string
+  /** Pill padding. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
 }
 
 /**
@@ -29,13 +31,19 @@ export interface KindPillProps extends React.HTMLAttributes<HTMLSpanElement> {
  * <KindPill kind="corrective" />
  * <KindPill kind="inspection" label="Audit" />
  */
-export function KindPill({ kind, label, className, ...props }: KindPillProps) {
+export function KindPill({
+  kind,
+  label,
+  density = 'comfortable',
+  className,
+  ...props
+}: KindPillProps) {
   const classes = ['eq-kind', `eq-kind--${kind}`, className]
     .filter(Boolean)
     .join(' ')
 
   return (
-    <span className={classes} {...props}>
+    <span className={classes} data-density={density} {...props}>
       <span className="eq-kind__dot" aria-hidden="true" />
       {label ?? LABELS[kind]}
     </span>

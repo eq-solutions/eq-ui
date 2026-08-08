@@ -17,6 +17,7 @@ import { AppSidebar, type AppSidebarSection } from '../src/AppShell/index'
 import { Tooltip } from '../src/Tooltip/Tooltip'
 import { EmptyState } from '../src/EmptyState/EmptyState'
 import { Pagination } from '../src/Pagination/Pagination'
+import { DateRangePicker, type DateRange } from '../src/DateRangePicker/DateRangePicker'
 
 const VARIANTS = ['primary', 'secondary', 'ghost', 'danger'] as const
 const SIZES = ['sm', 'md', 'lg'] as const
@@ -82,6 +83,8 @@ export function KitchenSink() {
   const [tab, setTab] = useState('all')
   const [inputValue, setInputValue] = useState('')
   const [paginationPage, setPaginationPage] = useState(1)
+  const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null })
+  const [dateRangeCompact, setDateRangeCompact] = useState<DateRange>({ start: null, end: null })
 
   return (
     <main className="ks-page">
@@ -123,6 +126,7 @@ export function KitchenSink() {
           <FormInput label="Email" type="email" hint="We'll only use this to sign you in." />
           <FormInput label="PIN" error="That PIN doesn't match." />
           <FormInput label="Disabled" disabled value="Can't edit this" />
+          <FormInput label="Compact" density="compact" placeholder="Dense Field surfaces" />
         </Row>
       </Section>
 
@@ -132,12 +136,22 @@ export function KitchenSink() {
             <StatusBadge key={status} status={status} />
           ))}
         </Row>
+        <Row>
+          {STATUSES.map((status) => (
+            <StatusBadge key={status} status={status} density="compact" />
+          ))}
+        </Row>
       </Section>
 
       <Section title="KindPill">
         <Row>
           {KINDS.map((kind) => (
             <KindPill key={kind} kind={kind} />
+          ))}
+        </Row>
+        <Row>
+          {KINDS.map((kind) => (
+            <KindPill key={kind} kind={kind} density="compact" />
           ))}
         </Row>
       </Section>
@@ -263,8 +277,26 @@ export function KitchenSink() {
         </table>
       </Section>
 
+      <Section title="DateRangePicker">
+        <Row>
+          <DateRangePicker label="Date range" value={dateRange} onChange={setDateRange} />
+          <DateRangePicker
+            label="Compact"
+            value={dateRangeCompact}
+            onChange={setDateRangeCompact}
+            density="compact"
+          />
+        </Row>
+      </Section>
+
       <Section title="Pagination">
         <Pagination page={paginationPage} pageCount={12} onPageChange={setPaginationPage} />
+        <Pagination
+          page={paginationPage}
+          pageCount={12}
+          onPageChange={setPaginationPage}
+          density="compact"
+        />
       </Section>
 
       <Section title="EmptyState">
@@ -273,6 +305,17 @@ export function KitchenSink() {
           description="Job numbers you add will show up here for the whole team."
           action={<Button size="sm">Add job number</Button>}
         />
+        <EmptyState
+          variant="filtered"
+          title="No results match your filters"
+          action={<Button variant="ghost" size="sm">Clear filters</Button>}
+        />
+        <EmptyState
+          variant="error"
+          title="Couldn't load job numbers"
+          action={<Button size="sm">Try again</Button>}
+        />
+        <EmptyState variant="no-access" title="You don't have access to this site" />
       </Section>
 
       <Section title="DropdownMenu">
@@ -280,6 +323,17 @@ export function KitchenSink() {
           <DropdownMenu
             trigger={
               <Button variant="ghost" size="sm" icon={<MoreHorizontal size={16} />} aria-label="More" />
+            }
+            items={[
+              { key: 'dup', label: 'Duplicate', icon: <Copy size={14} />, onClick: () => toast({ title: 'Duplicated' }) },
+              { key: 'sep', separator: true },
+              { key: 'trash', label: 'Move to trash', icon: <Trash2 size={14} />, onClick: () => toast({ tone: 'err', title: 'Trashed' }), variant: 'danger' },
+            ]}
+          />
+          <DropdownMenu
+            density="compact"
+            trigger={
+              <Button variant="ghost" size="sm" icon={<MoreHorizontal size={16} />} aria-label="More (compact)" />
             }
             items={[
               { key: 'dup', label: 'Duplicate', icon: <Copy size={14} />, onClick: () => toast({ title: 'Duplicated' }) },
