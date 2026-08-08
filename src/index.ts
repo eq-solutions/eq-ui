@@ -80,6 +80,10 @@ export type { PaginationProps } from './Pagination/Pagination'
 export { Tooltip } from './Tooltip/Tooltip'
 export type { TooltipProps, TooltipPlacement } from './Tooltip/Tooltip'
 
+// DateRangePicker
+export { DateRangePicker } from './DateRangePicker/DateRangePicker'
+export type { DateRangePickerProps, DateRange, DateRangePreset } from './DateRangePicker/DateRangePicker'
+
 // AppShell — layout chrome (sidebar, icon rail, layout wrapper)
 export { AppShell, AppSidebar, AppRail } from './AppShell/index'
 export type {

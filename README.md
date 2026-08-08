@@ -102,6 +102,7 @@ Label + input + hint/error in one accessible block. The label is wired to the in
 | `label` | `string` | — | Uppercase field label above the input |
 | `error` | `string` | — | Validation message; switches to error style, announced via `role="alert"` |
 | `hint` | `string` | — | Helper text below the input (hidden while `error` is set) |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Field height and label/input spacing |
 | `...props` | `InputHTMLAttributes<HTMLInputElement>` | — | All native input attributes forwarded |
 | `ref` | `Ref<HTMLInputElement>` | — | ForwardRef |
 
@@ -111,6 +112,7 @@ import { FormInput } from '@eq-solutions/ui'
 <FormInput label="Site name" value={name} onChange={e => setName(e.target.value)} />
 <FormInput label="Email" type="email" hint="We'll only use this to sign you in." />
 <FormInput label="PIN" error="That PIN doesn't match." />
+<FormInput label="PIN" density="compact" />
 ```
 
 ---
@@ -123,6 +125,7 @@ Lifecycle pill with a leading state dot. Status is for *state*, never brand — 
 |---|---|---|---|
 | `status` | `'open' \| 'in-progress' \| 'overdue' \| 'closed' \| 'await'` | — | Lifecycle state |
 | `label` | `string` | — | Override the default label text |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Pill padding |
 
 ```tsx
 import { StatusBadge } from '@eq-solutions/ui'
@@ -130,6 +133,7 @@ import { StatusBadge } from '@eq-solutions/ui'
 <StatusBadge status="open" />
 <StatusBadge status="overdue" />
 <StatusBadge status="closed" label="Done" />
+<StatusBadge status="open" density="compact" />
 ```
 
 ---
@@ -142,6 +146,7 @@ Bordered tag classifying a work order by *kind* (category, not lifecycle). Quiet
 |---|---|---|---|
 | `kind` | `'preventive' \| 'corrective' \| 'inspection'` | — | Work-order kind |
 | `label` | `string` | — | Override the default label text |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Pill padding |
 
 ```tsx
 import { KindPill } from '@eq-solutions/ui'
@@ -149,6 +154,7 @@ import { KindPill } from '@eq-solutions/ui'
 <KindPill kind="preventive" />
 <KindPill kind="corrective" />
 <KindPill kind="inspection" label="Audit" />
+<KindPill kind="preventive" density="compact" />
 ```
 
 ---
@@ -491,6 +497,138 @@ const [selected, setSelected] = useState<Set<string>>(new Set())
   rowStyle={r => r.status === 'overdue' ? { color: 'var(--eq-error-text)' } : undefined}
 />
 ```
+
+---
+
+### Pagination
+
+Page-number strip with distant pages collapsed behind an ellipsis. Renders nothing for a single page.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `page` | `number` | — | Current page, 1-indexed |
+| `pageCount` | `number` | — | Total number of pages |
+| `onPageChange` | `(page: number) => void` | — | Called with the next page number |
+| `siblingCount` | `number` | `1` | Pages shown on either side of the current page |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Control size |
+
+```tsx
+import { Pagination } from '@eq-solutions/ui'
+
+<Pagination page={page} pageCount={12} onPageChange={setPage} />
+<Pagination page={page} pageCount={12} onPageChange={setPage} density="compact" />
+```
+
+---
+
+### DropdownMenu
+
+Wraps any trigger element in a click-outside/Escape-closing menu. No positioning library — pure CSS, absolute-positioned against the trigger.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `trigger` | `ReactNode` | — | The element that opens the menu — typically an icon button |
+| `items` | `DropdownMenuEntry[]` | — | `{ key, label, icon?, onClick, disabled?, variant? }` or `{ key, separator: true }` |
+| `align` | `'left' \| 'right'` | `'right'` | Which edge to align the menu to |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Menu item padding |
+
+```tsx
+import { DropdownMenu } from '@eq-solutions/ui'
+
+<DropdownMenu
+  trigger={<button aria-label="More">⋯</button>}
+  items={[
+    { key: 'dup', label: 'Duplicate', icon: <Copy size={14} />, onClick: handleDuplicate },
+    { key: 'sep', separator: true },
+    { key: 'trash', label: 'Move to trash', icon: <Trash2 size={14} />, onClick: handleTrash, variant: 'danger' },
+  ]}
+/>
+```
+
+---
+
+### EmptyState
+
+Direct copy, one clear next step. Never pads with illustration — a single glyph is enough.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'default' \| 'filtered' \| 'error' \| 'no-access'` | `'default'` | Supplies a default icon and tone. `default` renders no icon unless one is passed. |
+| `icon` | `ReactNode` | — | Overrides the variant's default icon. |
+| `title` | `string` | — | Required. One-line statement of what's missing. |
+| `description` | `string` | — | Optional supporting copy — one sentence. |
+| `action` | `ReactNode` | — | The one clear next step, usually a `<Button>`. |
+
+#### Usage
+
+```tsx
+<EmptyState
+  title="No job numbers added yet"
+  description="Job numbers you add will show up here for the whole team."
+  action={<Button size="sm">Add job number</Button>}
+/>
+
+// Filtered-out result set — no error tone, just "try different filters"
+<EmptyState
+  variant="filtered"
+  title="No results match your filters"
+  action={<Button variant="ghost" size="sm" onClick={clearFilters}>Clear filters</Button>}
+/>
+
+// Load failure — red icon tone, pair with a retry action
+<EmptyState
+  variant="error"
+  title="Couldn't load job numbers"
+  action={<Button size="sm" onClick={retry}>Try again</Button>}
+/>
+
+// Permission denied
+<EmptyState variant="no-access" title="You don't have access to this site" />
+```
+
+---
+
+### DateRangePicker
+
+Trigger + popover calendar for picking a start/end date range. No external date library — built on native `Date` and `Intl.DateTimeFormat` only, formatted `en-AU` (e.g. "15 Aug 2026"). Click a start day, then an end day; the range commits and the popover closes. Presets fill both sides at once. Escape and click-outside close the popover, same pattern as `DropdownMenu`.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | — | Uppercase field label above the trigger |
+| `value` | `{ start: Date \| null; end: Date \| null }` | — | Current selected range |
+| `onChange` | `(range: DateRange) => void` | — | Called once both a start and end date are picked, or a preset is applied |
+| `presets` | `DateRangePreset[]` | Today / Last 7 days / Last 30 days / This month / Last month | Quick-select shortcuts |
+| `placeholder` | `string` | `'Select date range'` | Text shown when no range is selected |
+| `min` | `Date` | — | Earliest selectable date, inclusive |
+| `max` | `Date` | — | Latest selectable date, inclusive |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Trigger height and calendar cell size |
+
+```tsx
+import { DateRangePicker, type DateRange } from '@eq-solutions/ui'
+
+const [range, setRange] = useState<DateRange>({ start: null, end: null })
+
+<DateRangePicker label="Date range" value={range} onChange={setRange} />
+
+// Constrained to a licence period, compact for a dense Field surface
+<DateRangePicker
+  value={range}
+  onChange={setRange}
+  min={licenceIssued}
+  max={licenceExpires}
+  density="compact"
+/>
+```
+
+A single-date/time-of-day picker is not covered here — out of scope for this pass, tracked separately.
 
 ---
 

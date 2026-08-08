@@ -25,6 +25,8 @@ export interface DropdownMenuProps {
   items: DropdownMenuEntry[]
   /** Which edge to align the menu to. Defaults to 'right'. */
   align?: 'left' | 'right'
+  /** Menu item padding. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
 }
 
 function isSeparator(e: DropdownMenuEntry): e is DropdownMenuSeparatorDef {
@@ -47,7 +49,12 @@ function isSeparator(e: DropdownMenuEntry): e is DropdownMenuSeparatorDef {
  *   ]}
  * />
  */
-export function DropdownMenu({ trigger, items, align = 'right' }: DropdownMenuProps) {
+export function DropdownMenu({
+  trigger,
+  items,
+  align = 'right',
+  density = 'comfortable',
+}: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -68,7 +75,7 @@ export function DropdownMenu({ trigger, items, align = 'right' }: DropdownMenuPr
   }, [open, close])
 
   return (
-    <div className="eq-dropdown" ref={wrapRef}>
+    <div className="eq-dropdown" ref={wrapRef} data-density={density}>
       {/* `trigger` is documented + expected to be a native focusable control (e.g. a
           <button>); keyboard activation already works via native click-on-Enter/Space
           bubbling up to this wrapper. Adding our own onKeyDown here would double-fire

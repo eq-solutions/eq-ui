@@ -62,3 +62,12 @@
   box-shadow: var(--eq-focus-ring);
   outline: none;
 }
+
+/* Density */
+.eq-pagination[data-density="compact"] .eq-pagination__nav,
+.eq-pagination[data-density="compact"] .eq-pagination__page,
+.eq-pagination[data-density="compact"] .eq-pagination__ellipsis {
+  width: 26px;
+  height: 26px;
+  font-size: var(--eq-text-xs);
+}

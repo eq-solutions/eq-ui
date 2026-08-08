@@ -60,3 +60,9 @@
   color: var(--eq-gray-600);
 }
 .eq-badge--await .eq-badge__dot { background-color: var(--eq-gray-500); }
+
+/* Density */
+.eq-badge[data-density="compact"] {
+  padding: 2px var(--eq-space-2);
+  gap: var(--eq-space-1);
+}

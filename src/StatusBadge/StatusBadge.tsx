@@ -22,6 +22,8 @@ export interface StatusBadgeProps
   status: StatusKind
   /** Override the default label text for the status. */
   label?: string
+  /** Pill padding. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
 }
 
 /**
@@ -40,6 +42,7 @@ export interface StatusBadgeProps
 export function StatusBadge({
   status,
   label,
+  density = 'comfortable',
   className,
   ...props
 }: StatusBadgeProps) {
@@ -48,7 +51,7 @@ export function StatusBadge({
     .join(' ')
 
   return (
-    <span className={classes} {...props}>
+    <span className={classes} data-density={density} {...props}>
       <span className="eq-badge__dot" aria-hidden="true" />
       {label ?? LABELS[status]}
     </span>

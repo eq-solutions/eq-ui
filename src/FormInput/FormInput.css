@@ -66,6 +66,15 @@
   color: var(--eq-gray-500);
 }
 
+/* Density */
+.eq-field[data-density="compact"] {
+  gap: var(--eq-space-1);
+}
+
+.eq-field[data-density="compact"] .eq-field__input {
+  height: 32px;
+}
+
 .eq-field__error {
   font-size: var(--eq-text-xs);
   color: var(--eq-error-text);

@@ -10,6 +10,8 @@ export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   onPageChange: (page: number) => void
   /** Pages shown on either side of the current page. Defaults to 1. */
   siblingCount?: number
+  /** Control size and gap. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
 }
 
 const ELLIPSIS = '…'
@@ -42,12 +44,16 @@ function buildRange(
  *
  * @example
  * <Pagination page={page} pageCount={12} onPageChange={setPage} />
+ *
+ * // compact — dense Field surfaces
+ * <Pagination page={page} pageCount={12} onPageChange={setPage} density="compact" />
  */
 export function Pagination({
   page,
   pageCount,
   onPageChange,
   siblingCount = 1,
+  density = 'comfortable',
   className,
   ...props
 }: PaginationProps) {
@@ -56,7 +62,7 @@ export function Pagination({
   const classes = ['eq-pagination', className].filter(Boolean).join(' ')
 
   return (
-    <nav className={classes} aria-label="Pagination" {...props}>
+    <nav className={classes} aria-label="Pagination" data-density={density} {...props}>
       <button
         type="button"
         className="eq-pagination__nav"

@@ -78,3 +78,12 @@
   background: var(--eq-border-light, var(--eq-gray-100));
   margin: 4px 0;
 }
+
+/* Density */
+.eq-dropdown[data-density="compact"] .eq-dropdown__menu {
+  padding: 2px 0;
+}
+
+.eq-dropdown[data-density="compact"] .eq-dropdown__item {
+  padding: 5px 10px;
+}

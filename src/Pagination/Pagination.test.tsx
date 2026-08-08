@@ -47,4 +47,14 @@ describe('Pagination', () => {
     const results = await axe(container)
     expect(results.violations).toEqual([])
   })
+
+  it('defaults to comfortable density and accepts compact', () => {
+    const { container, rerender } = render(
+      <Pagination page={2} pageCount={5} onPageChange={vi.fn()} />
+    )
+    expect(container.querySelector('.eq-pagination')).toHaveAttribute('data-density', 'comfortable')
+
+    rerender(<Pagination page={2} pageCount={5} onPageChange={vi.fn()} density="compact" />)
+    expect(container.querySelector('.eq-pagination')).toHaveAttribute('data-density', 'compact')
+  })
 })
