@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.14.0
+
+### Minor Changes
+
+- 1df5b55: Add `DateRangePicker` — trigger + popover calendar for picking a start/end date range, with quick-select presets (Today, Last 7 days, Last 30 days, This month, Last month), `min`/`max` bounds, and `density` support. No new runtime dependency: built on native `Date` and `Intl.DateTimeFormat`, no date library added.
+
+  A single-date/time-of-day picker is out of scope for this change.
+
+- 1df5b55: Add `density?: 'comfortable' | 'compact'` to FormInput, Pagination, StatusBadge, KindPill, and DropdownMenu, matching Table's existing `data-density` attribute convention. Defaults to `'comfortable'` everywhere — no visual change unless a consumer opts in.
+
+  Button and Card were deliberately left out: they already expose equivalent density control via `size` and `padding` respectively, and a parallel `density` prop would just create two knobs for the same thing.
+
+- 1df5b55: EmptyState: add `variant` prop (`filtered` | `error` | `no-access`) with default icons and, for `error`, a red icon tone. Defaults to `'default'`, which renders exactly as before — no icon unless one is passed. An explicit `icon` prop always overrides the variant's default.
+
 ## 1.13.0
 
 ### Minor Changes
