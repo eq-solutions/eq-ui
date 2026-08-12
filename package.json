@@ -100,6 +100,10 @@
       "types": "./src/DateRangePicker/DateRangePicker.tsx",
       "default": "./src/DateRangePicker/DateRangePicker.tsx"
     },
+    "./MultiSelect": {
+      "types": "./src/MultiSelect/MultiSelect.tsx",
+      "default": "./src/MultiSelect/MultiSelect.tsx"
+    },
     "./styles": {
       "style": "./src/index.css",
       "default": "./src/index.css"

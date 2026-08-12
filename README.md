@@ -632,6 +632,42 @@ A single-date/time-of-day picker is not covered here — out of scope for this p
 
 ---
 
+### MultiSelect
+
+Trigger + popover checklist for picking a set of discrete values — a Status/Kind column filter, a form field assigning multiple licences to a worker, and so on. Not a Table internal; doesn't share code with Table's own filter popover. Same click-outside/Escape pattern as `DropdownMenu` and `DateRangePicker`. Chips show for 1-2 selections, collapse to a count for 3+. A search box appears automatically once the option list passes `searchThreshold`.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | — | Uppercase field label above the trigger |
+| `options` | `{ value: string; label: string; color?: string }[]` | — | The full option list. `color` is optional — pass a token, e.g. `'var(--eq-sky)'` |
+| `value` | `string[]` | — | Selected option values |
+| `onChange` | `(values: string[]) => void` | — | Called with the full new selection on every check/uncheck/clear |
+| `placeholder` | `string` | `'Any'` | Text shown in the trigger when nothing is selected |
+| `searchThreshold` | `number` | `8` | Show the popover's search box once there are more options than this |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Trigger height and popover row padding |
+
+```tsx
+import { MultiSelect } from '@eq-solutions/ui'
+
+const [statuses, setStatuses] = useState<string[]>([])
+
+<MultiSelect
+  label="Status"
+  options={[
+    { value: 'open', label: 'Open', color: 'var(--eq-sky)' },
+    { value: 'in-progress', label: 'In progress', color: 'var(--eq-warning-text)' },
+    { value: 'overdue', label: 'Overdue', color: 'var(--eq-error-text)' },
+    { value: 'closed', label: 'Closed', color: 'var(--eq-success-text)' },
+  ]}
+  value={statuses}
+  onChange={setStatuses}
+/>
+```
+
+---
+
 ## Token compliance
 
 The token-only invariant is **enforced in CI**, not just by review:

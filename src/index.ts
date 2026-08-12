@@ -84,6 +84,10 @@ export type { TooltipProps, TooltipPlacement } from './Tooltip/Tooltip'
 export { DateRangePicker } from './DateRangePicker/DateRangePicker'
 export type { DateRangePickerProps, DateRange, DateRangePreset } from './DateRangePicker/DateRangePicker'
 
+// MultiSelect
+export { MultiSelect } from './MultiSelect/MultiSelect'
+export type { MultiSelectProps, MultiSelectOption } from './MultiSelect/MultiSelect'
+
 // AppShell — layout chrome (sidebar, icon rail, layout wrapper)
 export { AppShell, AppSidebar, AppRail } from './AppShell/index'
 export type {
