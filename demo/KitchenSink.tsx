@@ -18,6 +18,7 @@ import { Tooltip } from '../src/Tooltip/Tooltip'
 import { EmptyState } from '../src/EmptyState/EmptyState'
 import { Pagination } from '../src/Pagination/Pagination'
 import { DateRangePicker, type DateRange } from '../src/DateRangePicker/DateRangePicker'
+import { MultiSelect } from '../src/MultiSelect/MultiSelect'
 
 const VARIANTS = ['primary', 'secondary', 'ghost', 'danger'] as const
 const SIZES = ['sm', 'md', 'lg'] as const
@@ -83,6 +84,8 @@ export function KitchenSink() {
   const [tab, setTab] = useState('all')
   const [inputValue, setInputValue] = useState('')
   const [paginationPage, setPaginationPage] = useState(1)
+  const [msStatus, setMsStatus] = useState<string[]>(['overdue'])
+  const [msSites, setMsSites] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null })
   const [dateRangeCompact, setDateRangeCompact] = useState<DateRange>({ start: null, end: null })
 
@@ -285,6 +288,33 @@ export function KitchenSink() {
             value={dateRangeCompact}
             onChange={setDateRangeCompact}
             density="compact"
+          />
+        </Row>
+      </Section>
+
+      <Section title="MultiSelect">
+        <Row>
+          <MultiSelect
+            label="Status"
+            options={[
+              { value: 'open', label: 'Open', color: 'var(--eq-sky)' },
+              { value: 'in-progress', label: 'In progress', color: 'var(--eq-warning-text)' },
+              { value: 'overdue', label: 'Overdue', color: 'var(--eq-error-text)' },
+              { value: 'closed', label: 'Closed', color: 'var(--eq-success-text)' },
+            ]}
+            value={msStatus}
+            onChange={setMsStatus}
+          />
+          <MultiSelect
+            label="Sites (search appears past 8 options)"
+            placeholder="Any site"
+            options={[
+              'Sydney depot', 'Parramatta yard', 'Bankstown warehouse', 'Liverpool site',
+              'Penrith depot', 'Blacktown yard', 'Campbelltown site', 'Hornsby depot',
+              'Chatswood office', 'Manly site',
+            ].map((s) => ({ value: s, label: s }))}
+            value={msSites}
+            onChange={setMsSites}
           />
         </Row>
       </Section>
