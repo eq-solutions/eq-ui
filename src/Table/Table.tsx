@@ -86,6 +86,16 @@ export interface TableProps<T> {
   /** Controlled active slicer key. Defaults to the first slicer's key. */
   activeSlicer?: string
   onSlicerChange?: (key: string) => void
+  /**
+   * Let multiple slicer chips be active at once (AND — a row must match
+   * every selected chip's filter), toggled on/off by click instead of the
+   * default single-select radio behaviour. The `'all'`-style chip (one with
+   * no `filter`) acts as "clear selection" rather than a real filter.
+   * Default false — existing single-select consumers (controlled via
+   * `activeSlicer`/`onSlicerChange`) are unaffected. Uncontrolled only;
+   * `activeSlicer`/`onSlicerChange` are ignored when this is true.
+   */
+  multiSlicer?: boolean
 
   /** Show a global search input in the toolbar. Pass `true` for defaults or an object to set placeholder. */
   globalSearch?: boolean | { placeholder?: string }
@@ -281,6 +291,7 @@ export function Table<T>({
   slicers,
   activeSlicer: controlledSlicer,
   onSlicerChange,
+  multiSlicer = false,
   globalSearch = false,
   columnToggle = false,
   defaultHiddenColumns,
@@ -377,6 +388,25 @@ export function Table<T>({
   function handleSlicerChange(key: string) {
     setInternalSlicer(key)
     onSlicerChange?.(key)
+  }
+
+  // multiSlicer is always uncontrolled — toggled chips are per-view UI
+  // state, not something a parent needs to drive (unlike activeSlicer,
+  // which existing single-select consumers control for e.g. a URL param).
+  const [activeSlicerSet, setActiveSlicerSet] = useState<Set<string>>(new Set())
+
+  function handleSlicerToggle(s: TableSlicer<T>) {
+    if (!s.filter) {
+      // The 'all'-style chip (no filter fn) means "clear selection".
+      setActiveSlicerSet(new Set())
+      return
+    }
+    setActiveSlicerSet(prev => {
+      const next = new Set(prev)
+      if (next.has(s.key)) next.delete(s.key)
+      else next.add(s.key)
+      return next
+    })
   }
 
   const slicerCounts = useMemo(() => {
@@ -503,7 +533,12 @@ export function Table<T>({
   // in the next column's dropdown. `excludeMultiKey` lets a column's own
   // options be computed as if its own filter weren't applied yet.
   const rowMatchesFilters = useCallback((row: T, excludeMultiKey?: string) => {
-    if (slicers && activeSlicer) {
+    if (slicers && multiSlicer) {
+      for (const key of activeSlicerSet) {
+        const s = slicers.find(s => s.key === key)
+        if (s?.filter && !s.filter(row)) return false
+      }
+    } else if (slicers && activeSlicer) {
       const s = slicers.find(s => s.key === activeSlicer)
       if (s?.filter && !s.filter(row)) return false
     }
@@ -538,7 +573,7 @@ export function Table<T>({
     }
 
     return true
-  }, [slicers, activeSlicer, query, filters, multiFilters, columns])
+  }, [slicers, activeSlicer, multiSlicer, activeSlicerSet, query, filters, multiFilters, columns])
 
   const autoSelectOptions = useMemo(() => {
     const opts: Record<string, { value: string; label: string }[]> = {}
@@ -585,7 +620,7 @@ export function Table<T>({
   const totalCount = pagination?.totalCount ?? sortedRows.length
   const totalPages = pagination ? Math.max(1, Math.ceil(sortedRows.length / pageSize)) : 1
 
-  useEffect(() => { setPage(1) }, [query, activeSlicer, filters, multiFilters])
+  useEffect(() => { setPage(1) }, [query, activeSlicer, activeSlicerSet, filters, multiFilters])
 
   const pagedRows = useMemo(() => {
     if (!pagination) return sortedRows
@@ -724,22 +759,27 @@ export function Table<T>({
         <div className="eq-table-toolbar">
           {slicers && slicers.length > 0 && (
             <div className="eq-table-slicers" role="group" aria-label="Quick filters">
-              {slicers.map(s => (
-                <button
-                  key={s.key}
-                  className={`eq-table-slicer${activeSlicer === s.key ? ' eq-table-slicer--active' : ''}`}
-                  aria-pressed={activeSlicer === s.key}
-                  onClick={() => handleSlicerChange(s.key)}
-                >
-                  {s.dot && (
-                    <span className="eq-table-slicer__dot" style={{ background: s.dot }} aria-hidden="true" />
-                  )}
-                  {s.label}
-                  <span className="eq-table-slicer__count">
-                    {slicerCounts[s.key] ?? 0}
-                  </span>
-                </button>
-              ))}
+              {slicers.map(s => {
+                const isActive = multiSlicer
+                  ? (s.filter ? activeSlicerSet.has(s.key) : activeSlicerSet.size === 0)
+                  : activeSlicer === s.key
+                return (
+                  <button
+                    key={s.key}
+                    className={`eq-table-slicer${isActive ? ' eq-table-slicer--active' : ''}`}
+                    aria-pressed={isActive}
+                    onClick={() => multiSlicer ? handleSlicerToggle(s) : handleSlicerChange(s.key)}
+                  >
+                    {s.dot && (
+                      <span className="eq-table-slicer__dot" style={{ background: s.dot }} aria-hidden="true" />
+                    )}
+                    {s.label}
+                    <span className="eq-table-slicer__count">
+                      {slicerCounts[s.key] ?? 0}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           )}
 
