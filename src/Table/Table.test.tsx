@@ -47,6 +47,21 @@ describe('Table — column reorder', () => {
     expect(screen.getByRole('button', { name: 'Move Location up' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Move Plan down' })).toBeDisabled()
   })
+
+  it('renders the column-visibility menu as a direct child of document.body, not nested inside the table', async () => {
+    // Regression test: the menu used to be position:absolute inside the
+    // table's own DOM, which got clipped by any ancestor's overflow — most
+    // visibly a short, filtered table inside a scrolling app shell. It's
+    // now portalled to document.body so no ancestor's overflow can clip it.
+    const user = userEvent.setup()
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} columnToggle />)
+
+    await user.click(screen.getByRole('button', { name: 'Columns' }))
+    const menu = screen.getByRole('menu')
+
+    expect(menu.parentElement).toBe(document.body)
+    expect(menu.closest('.eq-table-wrap')).toBeNull()
+  })
 })
 
 describe('Table — composite column filterValue/exportValue', () => {
