@@ -601,7 +601,9 @@ export function Table<T>({
     for (const [key, valueSet] of Object.entries(multiFilters)) {
       if (key === excludeMultiKey) continue
       if (!valueSet || valueSet.size === 0) continue
-      const cellVal = String((row as Record<string, unknown>)[key] ?? '').toLowerCase()
+      const multiCol = columns.find(c => c.key === key)
+      const raw = multiCol?.filterValue ? multiCol.filterValue(row) : (row as Record<string, unknown>)[key]
+      const cellVal = String(raw ?? '').toLowerCase()
       const matches = Array.from(valueSet).some(v => v.toLowerCase() === cellVal)
       if (!matches) return false
     }
@@ -616,7 +618,8 @@ export function Table<T>({
         const seen = new Set<string>()
         for (const row of rows) {
           if (col.filterable === 'multiselect' && !rowMatchesFilters(row, col.key)) continue
-          const val = String((row as Record<string, unknown>)[col.key] ?? '').trim()
+          const raw = col.filterValue ? col.filterValue(row) : (row as Record<string, unknown>)[col.key]
+          const val = String(raw ?? '').trim()
           if (val) seen.add(val)
         }
         opts[col.key] = Array.from(seen).sort().map(v => ({ value: v, label: v }))

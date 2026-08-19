@@ -99,6 +99,33 @@ describe('Table — composite column filterValue/exportValue', () => {
     expect(within(table).queryByText('Bo')).toBeNull()
   })
 
+  // Regression: multiselect's option-derivation and row-matching both read
+  // row[key] raw, ignoring filterValue — a composite column (no single
+  // backing field, e.g. Contact = phone+email) could never work as
+  // multiselect: options came back empty and no row ever matched
+  // (eq-shell Staff table, 2026-08-20).
+  it('multiselect uses filterValue for a composite column with no single backing field', async () => {
+    const user = userEvent.setup()
+    const multiContactColumns: TableColumn<ContactRow>[] = [
+      { key: 'name', header: 'Name' },
+      {
+        key: 'contact',
+        header: 'Contact',
+        filterable: 'multiselect',
+        filterValue: row => [row.phone, row.email].filter(Boolean).join(' '),
+      },
+    ]
+    render(<Table rows={contactRows} columns={multiContactColumns} getRowId={r => r.id} />)
+
+    await user.click(screen.getByRole('button', { name: 'Filter by Contact' }))
+    expect(screen.queryByRole('checkbox', { name: /0412345678/ })).toBeTruthy()
+    await user.click(screen.getByRole('checkbox', { name: /0412345678/ }))
+
+    const table = screen.getByRole('table')
+    expect(within(table).queryByText('Ann')).toBeTruthy()
+    expect(within(table).queryByText('Bo')).toBeNull()
+  })
+
   it('CSV export uses exportValue for composite columns', async () => {
     const originalCreateObjectURL = URL.createObjectURL
     const originalRevoke = URL.revokeObjectURL
