@@ -211,10 +211,13 @@
 }
 
 .eq-table-popover {
-  position: absolute;
-  top: 48px;
-  right: 0;
-  z-index: 40;
+  /* Portalled to document.body — position:fixed with top/right set inline
+   * from the trigger button's getBoundingClientRect() (see Table.tsx).
+   * z-index raised from 40: this now competes with a consuming app's whole
+   * stacking context, not just its local table card. Stays below Modal's
+   * 1000 so a dialog always wins if one happens to be open at the same time. */
+  position: fixed;
+  z-index: 500;
   width: 230px;
   background: var(--eq-white);
   border: 1px solid var(--eq-gray-200);

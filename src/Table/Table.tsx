@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Search, Download, Columns, Check, ChevronRight, ChevronUp, ChevronDown,
   ChevronsUpDown, X, ChevronLeft, Archive, Trash2, Filter,
@@ -440,16 +441,49 @@ export function Table<T>({
   })
   const [colsMenuOpen, setColsMenuOpen] = useState(false)
   const colsMenuRef = useRef<HTMLDivElement>(null)
+  const colsPopoverRef = useRef<HTMLDivElement>(null)
+  const [colsMenuPos, setColsMenuPos] = useState<{ top: number; right: number } | null>(null)
 
   useEffect(() => {
     if (!colsMenuOpen) return
     function onOutside(e: MouseEvent) {
-      if (colsMenuRef.current && !colsMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      if (
+        colsMenuRef.current && !colsMenuRef.current.contains(target) &&
+        colsPopoverRef.current && !colsPopoverRef.current.contains(target)
+      ) {
         setColsMenuOpen(false)
       }
     }
     document.addEventListener('mousedown', onOutside)
     return () => document.removeEventListener('mousedown', onOutside)
+  }, [colsMenuOpen])
+
+  // Portalled to document.body (see render below) so the popover can't be
+  // clipped by an ancestor's overflow-y:auto — a filtered table with few
+  // rows leaves too little room below the button for a full column list,
+  // and position:fixed alone doesn't escape an ancestor's overflow clip,
+  // only a portal does. Coordinates are computed from the button's real
+  // screen position since fixed placement can't be expressed as static CSS.
+  useLayoutEffect(() => {
+    if (!colsMenuOpen || !colsMenuRef.current) return
+    const rect = colsMenuRef.current.getBoundingClientRect()
+    setColsMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right })
+  }, [colsMenuOpen])
+
+  // Scroll/resize would leave the portalled popover anchored to a stale
+  // position — closing is simpler and safer than re-measuring every tick.
+  // Capture-phase so this also catches scroll on an ancestor pane
+  // (e.g. eq-shell's .eq-hub__content), not just window-level scroll.
+  useEffect(() => {
+    if (!colsMenuOpen) return
+    function onScrollOrResize() { setColsMenuOpen(false) }
+    window.addEventListener('scroll', onScrollOrResize, true)
+    window.addEventListener('resize', onScrollOrResize)
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize, true)
+      window.removeEventListener('resize', onScrollOrResize)
+    }
   }, [colsMenuOpen])
 
   function toggleCol(key: string) {
@@ -817,8 +851,13 @@ export function Table<T>({
                   <Columns size={16} aria-hidden="true" />
                   Columns
                 </button>
-                {colsMenuOpen && (
-                  <div className="eq-table-popover" role="menu">
+                {colsMenuOpen && colsMenuPos && typeof document !== 'undefined' && createPortal(
+                  <div
+                    ref={colsPopoverRef}
+                    className="eq-table-popover"
+                    role="menu"
+                    style={{ top: colsMenuPos.top, right: colsMenuPos.right }}
+                  >
                     <div className="eq-table-popover__header">Show columns</div>
                     {orderedColumns.map((col, colIdx) => {
                       const isVisible = !hiddenCols.has(col.key)
@@ -871,7 +910,8 @@ export function Table<T>({
                         </div>
                       )
                     })}
-                  </div>
+                  </div>,
+                  document.body,
                 )}
               </div>
             )}
