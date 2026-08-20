@@ -12,8 +12,29 @@
 
 .eq-skeleton {
   display: block;
+  position: relative;
+  overflow: hidden;
   background-color: var(--eq-gray-200);
-  animation: eq-skeleton-pulse var(--eq-duration-default, 1.4s) ease-in-out infinite;
+}
+
+.eq-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg, transparent, var(--eq-white), transparent);
+  animation: eq-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-skeleton::after {
+    animation: none;
+    /* No motion left to signal "loading" — a flat mid-opacity tint stands in. */
+    background-image: none;
+    background-color: var(--eq-gray-100);
+    opacity: 0.6;
+    transform: none;
+  }
 }
 
 /* ── Shapes ── */
@@ -75,7 +96,6 @@
 
 /* ── Keyframe ── */
 
-@keyframes eq-skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+@keyframes eq-skeleton-shimmer {
+  100% { transform: translateX(100%); }
 }
