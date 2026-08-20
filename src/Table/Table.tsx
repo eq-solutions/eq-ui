@@ -442,7 +442,7 @@ export function Table<T>({
   const [colsMenuOpen, setColsMenuOpen] = useState(false)
   const colsMenuRef = useRef<HTMLDivElement>(null)
   const colsPopoverRef = useRef<HTMLDivElement>(null)
-  const [colsMenuPos, setColsMenuPos] = useState<{ top: number; right: number } | null>(null)
+  const [colsMenuPos, setColsMenuPos] = useState<{ top: number; right: number; maxHeight: number } | null>(null)
 
   useEffect(() => {
     if (!colsMenuOpen) return
@@ -465,10 +465,18 @@ export function Table<T>({
   // and position:fixed alone doesn't escape an ancestor's overflow clip,
   // only a portal does. Coordinates are computed from the button's real
   // screen position since fixed placement can't be expressed as static CSS.
+  //
+  // The portal escapes ancestor clipping, but doesn't stop the popover from
+  // running past the BOTTOM of the viewport itself — with a short page (few
+  // table rows) or a long column list, `top` alone can place it partly
+  // off-screen with no way to scroll to the rest. Capping maxHeight to the
+  // remaining space below the button and letting the popover scroll
+  // internally covers that regardless of row count or column count.
   useLayoutEffect(() => {
     if (!colsMenuOpen || !colsMenuRef.current) return
     const rect = colsMenuRef.current.getBoundingClientRect()
-    setColsMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right })
+    const top = rect.bottom + 4
+    setColsMenuPos({ top, right: window.innerWidth - rect.right, maxHeight: window.innerHeight - top - 16 })
   }, [colsMenuOpen])
 
   // Scroll/resize would leave the portalled popover anchored to a stale
@@ -859,7 +867,7 @@ export function Table<T>({
                     ref={colsPopoverRef}
                     className="eq-table-popover"
                     role="menu"
-                    style={{ top: colsMenuPos.top, right: colsMenuPos.right }}
+                    style={{ top: colsMenuPos.top, right: colsMenuPos.right, maxHeight: colsMenuPos.maxHeight, overflowY: 'auto' }}
                   >
                     <div className="eq-table-popover__header">Show columns</div>
                     {orderedColumns.map((col, colIdx) => {
