@@ -205,7 +205,7 @@
   gap: 10px;
   padding: 9px 20px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.62);
   font-family: var(--eq-font-stack);
   font-size: var(--eq-text-base);
   font-weight: var(--eq-weight-medium);
@@ -226,7 +226,7 @@
 .eq-hub-sidebar__nav-icon {
   width: 30px;
   height: 30px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 7px;
   display: flex;
   align-items: center;
