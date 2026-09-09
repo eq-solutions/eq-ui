@@ -19,11 +19,13 @@
 /* ── 2. Component styles (alphabetical) ──────────────────────────────────── */
 @import "./Button/Button.css";
 @import "./Card/Card.css";
+@import "./DateRangePicker/DateRangePicker.css";
 @import "./DropdownMenu/DropdownMenu.css";
 @import "./EmptyState/EmptyState.css";
 @import "./FormInput/FormInput.css";
 @import "./KindPill/KindPill.css";
 @import "./Modal/Modal.css";
+@import "./MultiSelect/MultiSelect.css";
 @import "./Pagination/Pagination.css";
 @import "./Skeleton/Skeleton.css";
 @import "./Spinner/Spinner.css";

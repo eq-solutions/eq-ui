@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, type JSX } from 'react';
 import { Menu, X } from 'lucide-react';
+import './AppShell.css';
 
 interface AppShellSidebarProps {
   mode?: 'sidebar';
