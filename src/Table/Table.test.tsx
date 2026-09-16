@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { act, cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Table } from './Table'
 import type { TableColumn } from './Table'
@@ -193,5 +193,54 @@ describe('Table — multiselect header filter', () => {
     await user.click(screen.getByRole('button', { name: 'Filter by Plan' }))
     expect(screen.queryByRole('checkbox', { name: /E1\.24/ })).toBeTruthy()
     expect(screen.queryByRole('checkbox', { name: /E2\.05/ })).toBeNull()
+  })
+})
+
+describe('Table — loading debounce', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  // Regression: `loading` used to gate the skeleton directly, so a fetch that
+  // resolves in well under 200ms (fast connection, warm cache) mounted and
+  // unmounted the skeleton fast enough to read as a flash rather than a load
+  // (admin tables, 2026-09-16).
+  it('never shows the skeleton when loading resolves in under 200ms', () => {
+    vi.useFakeTimers()
+    const { rerender, container } = render(
+      <Table rows={[]} columns={columns} getRowId={r => r.id} loading />
+    )
+
+    act(() => { vi.advanceTimersByTime(100) })
+    rerender(<Table rows={rows} columns={columns} getRowId={r => r.id} loading={false} />)
+    act(() => { vi.advanceTimersByTime(500) })
+
+    expect(container.querySelectorAll('.eq-skeleton').length).toBe(0)
+    expect(screen.getByText('Roof')).toBeInTheDocument()
+  })
+
+  it('still shows the skeleton once loading genuinely exceeds 200ms', () => {
+    vi.useFakeTimers()
+    const { container } = render(
+      <Table rows={[]} columns={columns} getRowId={r => r.id} loading />
+    )
+
+    act(() => { vi.advanceTimersByTime(250) })
+
+    expect(container.querySelectorAll('.eq-skeleton').length).toBeGreaterThan(0)
+  })
+
+  it('hides the skeleton immediately once loading clears, even mid-delay', () => {
+    vi.useFakeTimers()
+    const { rerender, container } = render(
+      <Table rows={[]} columns={columns} getRowId={r => r.id} loading />
+    )
+
+    act(() => { vi.advanceTimersByTime(300) })
+    expect(container.querySelectorAll('.eq-skeleton').length).toBeGreaterThan(0)
+
+    rerender(<Table rows={rows} columns={columns} getRowId={r => r.id} loading={false} />)
+    expect(container.querySelectorAll('.eq-skeleton').length).toBe(0)
+    expect(screen.getByText('Roof')).toBeInTheDocument()
   })
 })
