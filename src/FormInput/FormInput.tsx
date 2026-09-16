@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, forwardRef, useId } from 'react'
+import React, { type InputHTMLAttributes, forwardRef, useId } from 'react'
 import './FormInput.css'
 
 export interface FormInputProps

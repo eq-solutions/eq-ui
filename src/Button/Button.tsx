@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, forwardRef } from 'react'
+import React, { type ButtonHTMLAttributes, forwardRef } from 'react'
 import './Button.css'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
