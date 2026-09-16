@@ -313,6 +313,23 @@ export function Table<T>({
   onActionError,
 }: TableProps<T>) {
 
+  // ── Loading debounce ─────────────────────────────────────────────────────
+  // A `loading` flip that resolves in well under ~200ms (fast connection, warm
+  // cache) mounts and unmounts the skeleton faster than a user can register it
+  // as "loading" — it just reads as a flash. Gate the visible skeleton behind
+  // a short delay so a fast load never shows one at all; a load that actually
+  // takes longer still shows it, at no added latency — the delay only holds
+  // back the skeleton, never how long `loading` itself takes to resolve.
+  const [showLoading, setShowLoading] = useState(false)
+  useEffect(() => {
+    if (!loading) {
+      setShowLoading(false)
+      return
+    }
+    const t = setTimeout(() => setShowLoading(true), 200)
+    return () => clearTimeout(t)
+  }, [loading])
+
   // ── Sort ───────────────────────────────────────────────────────────────
   const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(
     defaultSort ? { key: defaultSort.key, dir: defaultSort.dir ?? 'desc' } : null
@@ -1099,7 +1116,7 @@ export function Table<T>({
             </tr>
 
             {/* Per-column filter row */}
-            {hasColumnFilters && !loading && (
+            {hasColumnFilters && !showLoading && (
               <tr className="eq-table__filter-row">
                 {effectiveSelectable && <th className="eq-table__col-check" />}
                 {visibleCols.map(col => (
@@ -1135,7 +1152,7 @@ export function Table<T>({
           </thead>
 
           <tbody>
-            {loading ? (
+            {showLoading ? (
               Array.from({ length: loadingRows }).map((_, rowIdx) => (
                 <tr key={`sk-${rowIdx}`} aria-hidden="true">
                   {selectable && <td className="eq-table__col-check" />}
