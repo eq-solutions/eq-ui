@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.16.10
+
+### Patch Changes
+
+- 77ce92a: Release auth prefers a GitHub App installation token (APP_ID + APP_PRIVATE_KEY) with RELEASE_PAT fallback; real-browser axe+contrast smoke on the kitchen-sink demo (`npm run test:a11y`); demo is the documented visual catalog with clearer Button loading + AppSidebar active/inactive; ADOPTION.md documents the consumer contract and hand-port kill-list.
+- 6e9615b: Fix release workflow queuing: gate App-token step on job env HAS_APP_CREDS instead of step-level `if: secrets.*` (which prevented the Release workflow from starting after #62).
+
 ## 1.16.9
 
 ### Patch Changes
