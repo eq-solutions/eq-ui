@@ -6,13 +6,30 @@ All components reference `--eq-*` CSS custom properties. No hardcoded hex values
 
 ## Install
 
+Published to [GitHub Packages](https://npm.pkg.github.com) as `@eq-solutions/ui`.
+Point the `@eq-solutions` scope at that registry (once per machine / CI), then
+install this package **and** its peer `@eq-solutions/tokens`:
+
 ```sh
-pnpm add github:eq-solutions/eq-ui#v1.1.0
+# ~/.npmrc (or project .npmrc)
+# @eq-solutions:registry=https://npm.pkg.github.com
+# //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+
+npm install @eq-solutions/ui @eq-solutions/tokens
 # or
-npm install github:eq-solutions/eq-ui#v1.1.0
+pnpm add @eq-solutions/ui @eq-solutions/tokens
 ```
 
-`@eq-solutions/tokens` is a dependency — it installs automatically.
+`@eq-solutions/tokens` is a **peerDependency** — it does not install
+automatically. You must add it yourself (see peer range in `package.json`).
+
+Alternatively, pin a git tag directly (e.g. after a release creates `v1.16.7`):
+
+```sh
+npm install github:eq-solutions/eq-ui#v1.16.7
+```
+
+You still need `@eq-solutions/tokens` installed separately when using the git URL.
 
 ## Setup
 
@@ -21,6 +38,13 @@ Import the token CSS once, at your app root (before any component renders):
 ```css
 /* globals.css / index.css */
 @import "@eq-solutions/tokens/tokens.css";
+```
+
+Import component styles via the barrel (or rely on each component's self-import
+when importing components directly):
+
+```css
+@import "@eq-solutions/ui/styles";
 ```
 
 That's it. Every `--eq-*` custom property is now available and every component in this package will resolve correctly.

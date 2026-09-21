@@ -18,6 +18,8 @@ jobs:
       # Token-only invariant: the shared kit must carry no hardcoded colours.
       # Runs without the install too, but we gate it alongside typecheck.
       - run: npm run check:tokens
+      # Barrel invariant: every component CSS file must be wired into src/index.css.
+      - run: npm run check:barrel
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
