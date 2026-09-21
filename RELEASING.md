@@ -46,9 +46,11 @@ ephemeral, repo-scoped `GITHUB_TOKEN` via `NODE_AUTH_TOKEN`.
 5. Once proven, remove the `RELEASE_PAT` secret.
 
 The workflow calls `actions/create-github-app-token@v1` when both `APP_ID` and
-`APP_PRIVATE_KEY` are set, and uses that token for checkout + changesets.
-If either secret is missing, it falls back to `RELEASE_PAT` so current prod
-does not break during migration.
+`APP_PRIVATE_KEY` are set (presence is checked via a job-level `HAS_APP_CREDS`
+env flag — step-level `if: secrets.*` is not allowed by Actions and fails to
+queue the workflow), and uses that token for checkout + changesets. If either
+secret is missing, it falls back to `RELEASE_PAT` so current prod does not
+break during migration.
 
 Do **not** commit App private keys or PAT values into the repo.
 
