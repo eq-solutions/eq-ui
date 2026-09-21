@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, type JSX } from 'react';
+import { useState, useCallback, useEffect, useRef, type JSX } from 'react';
 import { Menu, X } from 'lucide-react';
 import './AppShell.css';
 
@@ -20,6 +20,9 @@ interface AppShellRailProps {
 }
 
 export type AppShellProps = AppShellSidebarProps | AppShellRailProps;
+
+const FOCUSABLE =
+  'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 /**
  * AppShell — the outer layout container for EQ apps.
@@ -55,14 +58,49 @@ function AppShellSidebar({
 }: AppShellSidebarProps): JSX.Element {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const restoreRef = useRef<Element | null>(null);
 
   useEffect(() => {
     if (!drawerOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeDrawer();
+
+    restoreRef.current = document.activeElement;
+    const drawer = drawerRef.current;
+    const first = drawer?.querySelector<HTMLElement>(FOCUSABLE);
+    ;(first ?? drawer)?.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeDrawer();
+        return;
+      }
+      if (e.key !== 'Tab' || !drawer) return;
+      const nodes = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (nodes.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const firstNode = nodes[0];
+      const lastNode = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === firstNode) {
+        e.preventDefault();
+        lastNode.focus();
+      } else if (!e.shiftKey && document.activeElement === lastNode) {
+        e.preventDefault();
+        firstNode.focus();
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown, true);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown, true);
+      document.body.style.overflow = prevOverflow;
+      if (restoreRef.current instanceof HTMLElement) restoreRef.current.focus();
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
   }, [drawerOpen, closeDrawer]);
 
   return (
@@ -89,8 +127,13 @@ function AppShellSidebar({
 
       {/* Mobile drawer */}
       <div
+        ref={drawerRef}
         className={`eq-hub-drawer${drawerOpen ? ' eq-hub-drawer--open' : ''}`}
+        role={drawerOpen ? 'dialog' : undefined}
+        aria-modal={drawerOpen ? true : undefined}
+        aria-label={drawerOpen ? 'Navigation' : undefined}
         aria-hidden={!drawerOpen}
+        tabIndex={drawerOpen ? -1 : undefined}
       >
         <button
           type="button"

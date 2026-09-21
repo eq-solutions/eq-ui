@@ -106,7 +106,7 @@
 .eq-hub-sidebar__collapse {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -205,7 +205,7 @@
   gap: 10px;
   padding: 9px 20px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.62);
   font-family: var(--eq-font-stack);
   font-size: var(--eq-text-base);
   font-weight: var(--eq-weight-medium);
@@ -223,10 +223,15 @@
   border-left-color: var(--eq-sky);
 }
 
+.eq-hub-sidebar__nav-item:focus-visible {
+  outline: 2px solid var(--eq-focus-ring);
+  outline-offset: -2px;
+}
+
 .eq-hub-sidebar__nav-icon {
   width: 30px;
   height: 30px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -249,7 +254,8 @@
 }
 
 .eq-hub-sidebar__nav-count--muted {
-  color: var(--eq-slate);
+  /* --eq-slate does not exist in tokens; mute against the dark sidebar. */
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .eq-hub-sidebar__nav-warn {
@@ -352,7 +358,7 @@
 .eq-hub-sidebar__density-toggle {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -365,6 +371,12 @@
 .eq-hub-sidebar__user-logout:hover,
 .eq-hub-sidebar__density-toggle:hover {
   color: rgba(255, 255, 255, 0.60);
+}
+
+.eq-hub-sidebar__user-logout:focus-visible,
+.eq-hub-sidebar__density-toggle:focus-visible {
+  outline: 2px solid var(--eq-focus-ring);
+  outline-offset: var(--eq-focus-offset);
 }
 
 .eq-hub-sidebar__density-toggle[aria-pressed="true"] {

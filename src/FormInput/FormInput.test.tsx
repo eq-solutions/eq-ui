@@ -25,6 +25,25 @@ describe('FormInput', () => {
     expect(screen.getByLabelText('PIN')).toHaveAttribute('aria-invalid', 'true')
   })
 
+  it('keeps error/hint aria wiring even when aria-describedby is passed through', () => {
+    render(
+      <FormInput
+        label="Email"
+        hint="We'll only use this to sign you in."
+        aria-describedby="extra-desc"
+      />
+    )
+    const input = screen.getByLabelText('Email')
+    const describedBy = input.getAttribute('aria-describedby') ?? ''
+    expect(describedBy).toContain('hint')
+    expect(describedBy.split(/\s+/)).toContain('extra-desc')
+  })
+
+  it('does not let a passed aria-invalid clear the error state', () => {
+    render(<FormInput label="PIN" error="That PIN doesn't match." aria-invalid={false} />)
+    expect(screen.getByLabelText('PIN')).toHaveAttribute('aria-invalid', 'true')
+  })
+
   it('defaults to comfortable density and accepts compact', () => {
     const { container, rerender } = render(<FormInput label="Site name" />)
     expect(container.querySelector('.eq-field')).toHaveAttribute('data-density', 'comfortable')
