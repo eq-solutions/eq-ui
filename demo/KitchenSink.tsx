@@ -71,8 +71,26 @@ const SIDEBAR_SECTIONS: AppSidebarSection[] = [
     key: 'records',
     label: 'Records',
     items: [
-      { key: 'work-orders', label: 'Work orders', href: '#', icon: <span aria-hidden="true">▤</span>, isActive: true, count: 12 },
-      { key: 'assets', label: 'Assets', href: '#', icon: <span aria-hidden="true">▤</span> },
+      {
+        key: 'work-orders',
+        label: 'Work orders (active)',
+        href: '#sidebar-active',
+        icon: <span aria-hidden="true">▤</span>,
+        isActive: true,
+        count: 12,
+      },
+      {
+        key: 'assets',
+        label: 'Assets (inactive)',
+        href: '#sidebar-inactive',
+        icon: <span aria-hidden="true">▤</span>,
+      },
+      {
+        key: 'sites',
+        label: 'Sites (inactive)',
+        href: '#sidebar-inactive-2',
+        icon: <span aria-hidden="true">▤</span>,
+      },
     ],
   },
 ]
@@ -94,9 +112,11 @@ export function KitchenSink() {
       <header className="ks-header">
         <h1>@eq-solutions/ui — kitchen sink</h1>
         <p>
-          A visual reference for every component's variants, for eyeballing changes
-          during development. Not a substitute for the tests — see each component's
-          <code> *.test.tsx</code> for behavioral/accessibility coverage.
+          Visual source of truth for every component until a docs site exists.
+          Use this to eyeball variants (Button loading, AppSidebar active vs
+          inactive, etc.) during development. Not a substitute for the tests —
+          see each component's <code>*.test.tsx</code> and{' '}
+          <code>npm run test:a11y</code> for behavior / accessibility coverage.
         </p>
       </header>
 
@@ -110,8 +130,19 @@ export function KitchenSink() {
             ))}
           </Row>
         ))}
+        <p className="ks-note">
+          Loading: spinner overlays the label; the label stays mounted (opacity 0)
+          so the accessible name is preserved — regression class for #56. Compare
+          each variant idle vs loading by eye.
+        </p>
         <Row>
-          <Button loading>Loading</Button>
+          {VARIANTS.map((variant) => (
+            <Button key={`loading-${variant}`} variant={variant} loading>
+              Save {variant}
+            </Button>
+          ))}
+        </Row>
+        <Row>
           <Button disabled>Disabled</Button>
           <Button icon={<Plus size={16} />}>With icon</Button>
           <Button variant="ghost" icon={<Trash2 size={16} />} aria-label="Delete" />
@@ -376,12 +407,13 @@ export function KitchenSink() {
 
       <Section title="AppSidebar (bounded preview)">
         <p className="ks-note">
-          AppShell/AppSidebar/AppRail are page-level layout chrome, not gallery
-          tiles — bounded here in a fixed-height box just to preview the sidebar's
-          own styling. See AppShell.test.tsx for behavior coverage (drawer,
-          keyboard, focus).
+          AppShell/AppSidebar/AppRail are page-level layout chrome — bounded in a
+          fixed-height box to preview sidebar styling. Active item: white label +
+          sky left border. Inactive items: muted label, transparent border. If
+          active and inactive look the same, that is a visual regression. See
+          AppShell.test.tsx for drawer / keyboard / focus coverage.
         </p>
-        <div className="ks-shell-box">
+        <div className="ks-shell-box" data-demo="appsidebar-active-inactive">
           <AppSidebar
             homeHref="#"
             brandLabel="EQ Solutions"

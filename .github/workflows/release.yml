@@ -16,17 +16,29 @@ jobs:
       packages: write
       issues: write
     steps:
+      # Prefer a GitHub App installation token (non-expiring) when APP_ID +
+      # APP_PRIVATE_KEY are configured. Fall back to RELEASE_PAT so current
+      # prod keeps working until the App is proven. See RELEASING.md.
+      - name: Create GitHub App token
+        id: app-token
+        if: ${{ secrets.APP_ID != '' && secrets.APP_PRIVATE_KEY != '' }}
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # PAT so the changeset-release/main branch is pushed by a user identity.
-          # The org disables "Actions can create PRs", so the default GITHUB_TOKEN
-          # cannot open the Version Packages PR (HTTP 409). A PAT bypasses that.
-          token: ${{ secrets.RELEASE_PAT }}
+          # App token (preferred) or RELEASE_PAT so the changeset-release/main
+          # branch is pushed by a non-Actions identity. The org disables
+          # "Actions can create PRs", so the default GITHUB_TOKEN cannot open
+          # the Version Packages PR (HTTP 409).
+          token: ${{ steps.app-token.outputs.token || secrets.RELEASE_PAT }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
           registry-url: https://npm.pkg.github.com
           scope: '@eq-solutions'
@@ -39,19 +51,20 @@ jobs:
           title: 'chore: version packages'
           commit: 'chore: version packages'
         env:
-          # PR creation + git operations run as the PAT user (bypasses org PR block).
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+          # PR creation + git operations run as the App / PAT identity
+          # (bypasses org PR block). Prefer App token when present.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token || secrets.RELEASE_PAT }}
           # npm publish to GitHub Packages keeps the ephemeral, repo-scoped token.
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # eq-context's backup/restore/verify jobs alert via Sentry Cron check-ins
       # (if: failure() -> curl the Sentry monitor API) -- that's the suite's
       # only existing CI-failure convention, but it needs a SENTRY_DSN secret
-      # and this repo doesn't have one (`gh secret list` shows RELEASE_PAT
-      # only), so reusing it here would just no-op silently instead of fixing
-      # anything. This uses the default GITHUB_TOKEN instead of RELEASE_PAT
-      # deliberately: it stays valid even when RELEASE_PAT is the thing that
-      # expired, which is exactly the failure mode this step exists to catch.
+      # and this repo doesn't have one, so reusing it here would just no-op
+      # silently instead of fixing anything. This uses the default
+      # GITHUB_TOKEN deliberately: it stays valid even when RELEASE_PAT is the
+      # thing that expired, which is exactly the failure mode this step exists
+      # to catch.
       - name: Open issue on failure
         if: failure()
         env:
@@ -69,7 +82,7 @@ jobs:
             BODY=$(printf '%s\n\nRun: %s\n\n%s' \
               "The Release workflow (changesets -> npm publish) failed, which blocks every pending version-packages PR from publishing until this is fixed." \
               "$RUN_URL" \
-              "Common cause: RELEASE_PAT (used for checkout + changesets/action, so the Version Packages PR can be opened despite the org blocking Actions-created PRs) has expired. Check Settings -> Secrets -> Actions -> RELEASE_PAT and rotate it.")
+              "Common causes: (1) RELEASE_PAT expired — rotate it, or migrate to the GitHub App (APP_ID + APP_PRIVATE_KEY) documented in RELEASING.md; (2) App credentials misconfigured after migration.")
             gh issue create --repo "$REPO" --title "$TITLE" --body "$BODY" || true
             echo "Opened new failure issue"
           fi

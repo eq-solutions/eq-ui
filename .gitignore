@@ -12,3 +12,6 @@ build/
 .cache/
 *.tsbuildinfo
 .claude/settings.local.json
+test-results/
+playwright-report/
+playwright/.cache/

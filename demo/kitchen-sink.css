@@ -3,7 +3,9 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: var(--eq-ice, #eaf5fb);
+  /* White page chrome so gallery labels meet AA against the surface
+     (ice #eaf5fb + muted ink failed color-contrast in the a11y smoke). */
+  background: var(--eq-white, #ffffff);
   color: var(--eq-ink, #1a1a2e);
 }
 
@@ -15,7 +17,6 @@ body {
 
 .ks-header p {
   color: var(--eq-ink, #1a1a2e);
-  opacity: 0.7;
   max-width: 640px;
 }
 
@@ -28,7 +29,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  opacity: 0.6;
+  color: var(--eq-ink, #1a1a2e);
   margin: 0 0 0.75rem;
 }
 
@@ -42,7 +43,7 @@ body {
 
 .ks-note {
   font-size: 0.85rem;
-  opacity: 0.65;
+  color: var(--eq-ink, #1a1a2e);
   margin: 0.75rem 0;
 }
 
@@ -52,14 +53,14 @@ body {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  opacity: 0.7;
+  color: var(--eq-ink, #1a1a2e);
 }
 
 .ks-spinner-cell--inverted {
-  background: var(--eq-sky, #3da8d8);
+  background: var(--eq-ink, #1a1a2e);
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  color: white;
+  color: var(--eq-white, #ffffff);
 }
 
 .ks-shell-box {
