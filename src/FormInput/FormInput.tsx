@@ -39,7 +39,18 @@ export interface FormInputProps
  */
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   function FormInput(
-    { label, error, hint, density = 'comfortable', id, className, disabled, ...props },
+    {
+      label,
+      error,
+      hint,
+      density = 'comfortable',
+      id,
+      className,
+      disabled,
+      'aria-describedby': ariaDescribedByProp,
+      'aria-invalid': ariaInvalidProp,
+      ...props
+    },
     ref
   ) {
     const autoId = useId()
@@ -49,6 +60,9 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       : hint
         ? `${inputId}-hint`
         : undefined
+    const describedBy = [describedById, ariaDescribedByProp]
+      .filter(Boolean)
+      .join(' ') || undefined
 
     const wrapClass = ['eq-field', className].filter(Boolean).join(' ')
     const inputClass = ['eq-field__input', error && 'eq-field__input--error']
@@ -63,13 +77,13 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           </label>
         )}
         <input
+          {...props}
           ref={ref}
           id={inputId}
           className={inputClass}
           disabled={disabled}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={describedById}
-          {...props}
+          aria-invalid={error ? true : ariaInvalidProp}
+          aria-describedby={describedBy}
         />
         {error ? (
           <span id={`${inputId}-error`} className="eq-field__error" role="alert">

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppShell } from './AppShell'
 import { axe } from '../test-utils/axe'
@@ -52,6 +52,49 @@ describe('AppShell (sidebar mode)', () => {
 
     await user.click(backdrop as Element)
     expect(screen.getByLabelText('Open navigation')).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('moves focus into the drawer on open and restores it on close', async () => {
+    const user = userEvent.setup()
+    renderSidebarMode()
+
+    const hamburger = screen.getByLabelText('Open navigation')
+    await user.click(hamburger)
+
+    expect(screen.getByLabelText('Close navigation')).toHaveFocus()
+
+    await user.keyboard('{Escape}')
+    expect(hamburger).toHaveFocus()
+  })
+
+  it('traps Tab focus inside the open drawer', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <AppShell
+        sidebar={
+          <nav aria-label="Primary">
+            <a href="/home">Home</a>
+          </nav>
+        }
+      >
+        <button type="button">Outside content</button>
+      </AppShell>
+    )
+
+    await user.click(screen.getByLabelText('Open navigation'))
+    const drawer = container.querySelector('.eq-hub-drawer') as HTMLElement
+    const close = within(drawer).getByLabelText('Close navigation')
+    const home = within(drawer).getByRole('link', { name: 'Home' })
+    expect(close).toHaveFocus()
+
+    await user.tab()
+    expect(home).toHaveFocus()
+
+    await user.tab()
+    expect(close).toHaveFocus()
+
+    await user.tab({ shift: true })
+    expect(home).toHaveFocus()
   })
 
   it('has no detectable accessibility violations, closed or open', async () => {

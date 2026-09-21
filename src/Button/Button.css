@@ -162,7 +162,10 @@
 }
 
 .eq-btn__content--hidden {
-  visibility: hidden;
+  /* Keep children in the a11y tree so the button retains its accessible name
+     while the spinner (aria-hidden) is showing. visibility:hidden would drop
+     the label from the accessibility tree. */
+  opacity: 0;
 }
 
 @keyframes eq-btn-spin {
