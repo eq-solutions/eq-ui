@@ -83,7 +83,8 @@ const DEFAULT_ICONS: Record<ToastTone, React.ReactNode> = {
  *
  * Wrap the app once near the root, then call `useToast().toast(…)` anywhere.
  * Toasts auto-dismiss (default 4s), stack bottom-right, and are announced via
- * an `aria-live` region. Floating UI — shadow is permitted here.
+ * an `aria-live` region (`role="alert"` for `tone: 'err'`, `role="status"`
+ * otherwise). Floating UI — shadow is permitted here.
  *
  * All styling references `--eq-*` custom properties from `@eq-solutions/tokens`.
  *
@@ -138,8 +139,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div className="eq-toast__region" role="region" aria-live="polite" aria-label="Notifications">
             {toasts.map((t) => {
               const tone = t.tone ?? 'ok'
+              // Errors interrupt; everything else stays polite via the region.
+              const role = tone === 'err' ? 'alert' : 'status'
               return (
-                <div key={t.id} className={`eq-toast eq-toast--${tone}`} role="status">
+                <div key={t.id} className={`eq-toast eq-toast--${tone}`} role={role}>
                   <span className="eq-toast__icon" aria-hidden="true">
                     {t.icon ?? DEFAULT_ICONS[tone]}
                   </span>

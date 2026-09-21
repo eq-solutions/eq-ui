@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import './DateRangePicker.css'
 
@@ -159,6 +159,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const [viewMonth, setViewMonth] = useState(() => startOfMonth(value.start ?? new Date()))
     const [pendingStart, setPendingStart] = useState<Date | null>(value.start)
     const wrapRef = useRef<HTMLDivElement>(null)
+    const triggerId = useId()
 
     const close = useCallback(() => setOpen(false), [])
 
@@ -235,10 +236,15 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
 
     return (
       <div ref={ref} className={classes} data-density={density}>
-        {label && <span className="eq-daterange__label">{label}</span>}
+        {label && (
+          <label className="eq-daterange__label" htmlFor={triggerId}>
+            {label}
+          </label>
+        )}
         <div className="eq-daterange__wrap" ref={wrapRef}>
           <button
             type="button"
+            id={triggerId}
             className="eq-daterange__trigger"
             onClick={() => setOpen((o) => !o)}
             aria-haspopup="dialog"

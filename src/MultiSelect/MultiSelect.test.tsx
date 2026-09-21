@@ -93,6 +93,19 @@ describe('MultiSelect', () => {
     expect(screen.getByText('3 selected')).toBeInTheDocument()
   })
 
+  it('wires the field label to the trigger via htmlFor', () => {
+    render(
+      <MultiSelect
+        label="Status"
+        options={STATUS_OPTIONS}
+        value={[]}
+        onChange={vi.fn()}
+        placeholder="Any status"
+      />
+    )
+    expect(screen.getByLabelText('Status')).toBeInTheDocument()
+  })
+
   it('Clear calls onChange with an empty array', async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

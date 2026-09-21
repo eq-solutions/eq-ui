@@ -9,19 +9,29 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-function Harness({ duration }: { duration?: number }) {
+function Harness({
+  duration,
+  tone,
+}: {
+  duration?: number
+  tone?: 'ok' | 'warn' | 'err' | 'info'
+}) {
   const { toast } = useToast()
   return (
-    <button onClick={() => toast({ title: 'Saved', message: 'Work order updated.', duration })}>
+    <button
+      onClick={() =>
+        toast({ title: 'Saved', message: 'Work order updated.', duration, tone })
+      }
+    >
       fire
     </button>
   )
 }
 
-function renderHarness(duration?: number) {
+function renderHarness(duration?: number, tone?: 'ok' | 'warn' | 'err' | 'info') {
   return render(
     <ToastProvider>
-      <Harness duration={duration} />
+      <Harness duration={duration} tone={tone} />
     </ToastProvider>
   )
 }
@@ -39,6 +49,15 @@ describe('Toast', () => {
       'aria-live',
       'polite'
     )
+  })
+
+  it('uses role="alert" for error toasts so they interrupt', async () => {
+    const user = userEvent.setup()
+    renderHarness(undefined, 'err')
+    await user.click(screen.getByText('fire'))
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
 
   it('auto-dismisses after the default 4s duration', () => {
