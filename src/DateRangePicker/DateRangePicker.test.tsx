@@ -104,10 +104,15 @@ describe('DateRangePicker', () => {
     expect(container.querySelector('.eq-daterange')).toHaveAttribute('data-density', 'compact')
   })
 
+  it('wires the field label to the trigger via htmlFor', () => {
+    render(<DateRangePicker label="Date range" value={EMPTY} onChange={vi.fn()} />)
+    expect(screen.getByLabelText('Date range')).toBeInTheDocument()
+  })
+
   it('has no detectable accessibility violations while open', async () => {
     const user = userEvent.setup()
     const { container } = render(<DateRangePicker label="Date range" value={EMPTY} onChange={vi.fn()} />)
-    await user.click(screen.getByRole('button', { name: /select date range/i }))
+    await user.click(screen.getByLabelText('Date range'))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
 
     const results = await axe(container)

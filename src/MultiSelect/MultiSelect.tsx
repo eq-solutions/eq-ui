@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
 import './MultiSelect.css'
 
@@ -67,6 +67,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const [open, setOpen] = useState(false)
     const [query, setQuery] = useState('')
     const wrapRef = useRef<HTMLDivElement>(null)
+    const triggerId = useId()
 
     const close = useCallback(() => {
       setOpen(false)
@@ -114,10 +115,15 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
     return (
       <div ref={ref} className={classes} data-density={density}>
-        {label && <span className="eq-multiselect__label">{label}</span>}
+        {label && (
+          <label className="eq-multiselect__label" htmlFor={triggerId}>
+            {label}
+          </label>
+        )}
         <div className="eq-multiselect__wrap" ref={wrapRef}>
           <button
             type="button"
+            id={triggerId}
             className="eq-multiselect__trigger"
             onClick={() => setOpen((o) => !o)}
             aria-haspopup="true"
