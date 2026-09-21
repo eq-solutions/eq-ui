@@ -704,12 +704,31 @@ The token-only invariant is **enforced in CI**, not just by review:
 - All sizing uses token-defined spacing and radius variables.
 - Deliberate exceptions carry a `token-guard-allow` comment on the line.
 
-## Local preview
+## Kitchen-sink demo (visual source of truth)
 
-`npm run dev` starts a Vite dev server (`demo/`) rendering every component with a
-few representative variants each — a quick visual sanity check while developing,
-not a substitute for the tests in each component's `*.test.tsx`. Dev-only; not
-part of the published package.
+Until a dedicated docs site exists, **`demo/` is the first-class visual catalog**
+for every component — the place to see all variants side by side and catch
+styling regressions by eye (e.g. Button loading, AppSidebar active vs inactive).
+
+```sh
+npm run dev
+```
+
+Opens the Vite kitchen sink (`demo/KitchenSink.tsx`). It is the visual source of
+truth for “what does this package look like?” — not a substitute for the
+behavioral / axe coverage in each component's `*.test.tsx`, and not part of the
+published package.
+
+Real-browser contrast (and other axe rules jsdom cannot run) is covered by
+`npm run test:a11y` against this same demo page.
+
+## Adoption
+
+Consuming apps must depend on `@eq-solutions/ui` + `@eq-solutions/tokens` via
+GitHub Packages — no hand-ported component CSS. See **[ADOPTION.md](./ADOPTION.md)**
+for the kill-list of known exceptions, Renovate expectations, and the
+same-day Version Packages merge rule. Release auth and the publish flow are in
+**[RELEASING.md](./RELEASING.md)**.
 
 ## Related
 

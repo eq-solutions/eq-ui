@@ -128,6 +128,7 @@
     "check:barrel": "node scripts/check-barrel.mjs",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:a11y": "playwright test --config=playwright.a11y.config.ts",
     "check": "npm run typecheck && npm run check:tokens && npm run check:barrel && npm run lint && npm run test",
     "dev": "vite",
     "release": "changeset publish"
@@ -139,9 +140,11 @@
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@changesets/cli": "^2.31.0",
     "@eq-solutions/tokens": "github:eq-solutions/eq-design-tokens#v1.3.2",
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.63.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
