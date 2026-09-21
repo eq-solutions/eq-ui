@@ -15,13 +15,17 @@ jobs:
       pull-requests: write
       packages: write
       issues: write
+    # secrets.* is not allowed in step-level `if:` (workflow fails to queue with
+    # 0 jobs). Hoist presence to a job env flag, then gate the App-token step.
+    env:
+      HAS_APP_CREDS: ${{ secrets.APP_ID != '' && secrets.APP_PRIVATE_KEY != '' }}
     steps:
       # Prefer a GitHub App installation token (non-expiring) when APP_ID +
       # APP_PRIVATE_KEY are configured. Fall back to RELEASE_PAT so current
       # prod keeps working until the App is proven. See RELEASING.md.
       - name: Create GitHub App token
         id: app-token
-        if: ${{ secrets.APP_ID != '' && secrets.APP_PRIVATE_KEY != '' }}
+        if: env.HAS_APP_CREDS == 'true'
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.APP_ID }}
