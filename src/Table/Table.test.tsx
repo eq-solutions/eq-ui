@@ -244,3 +244,82 @@ describe('Table — loading debounce', () => {
     expect(screen.getByText('Roof')).toBeInTheDocument()
   })
 })
+
+describe('Table — mobile layout hooks', () => {
+  // jsdom doesn't evaluate media queries, so these pin the DOM contract the
+  // ≤767px CSS in Table.css relies on. The layouts themselves are verified
+  // in the kitchen-sink preview at 375px.
+
+  it('defaults to the scroll layout and wraps the table in a scroll container', () => {
+    const { container } = render(<Table rows={rows} columns={columns} getRowId={r => r.id} />)
+    const card = container.querySelector('.eq-table-card')!
+    expect(card).toHaveAttribute('data-mobile-layout', 'scroll')
+    expect(card.querySelector(':scope > .eq-table-scroll > table.eq-table')).not.toBeNull()
+  })
+
+  it('passes mobileLayout="cards" through to the card', () => {
+    const { container } = render(
+      <Table rows={rows} columns={columns} getRowId={r => r.id} mobileLayout="cards" />
+    )
+    expect(container.querySelector('.eq-table-card')).toHaveAttribute('data-mobile-layout', 'cards')
+  })
+
+  it('labels every data cell with its column header for the stacked card layout', () => {
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} />)
+    const firstRow = screen.getAllByRole('row')[1]
+    const labels = within(firstRow).getAllByRole('cell')
+      .map(c => c.getAttribute('data-label'))
+      .filter(Boolean)
+    expect(labels).toEqual(['Location', 'Work Order', 'Plan'])
+  })
+
+  it('marks the first visible data column as primary, following column hide/reorder', async () => {
+    const user = userEvent.setup()
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} columnToggle selectable selectedIds={new Set()} />)
+
+    const primaryHeaders = () =>
+      screen.getAllByRole('columnheader').filter(h => h.classList.contains('eq-table__col-primary'))
+    expect(primaryHeaders().map(h => h.textContent)).toEqual(['Location'])
+    // Checkbox cell is never the primary column.
+    expect(screen.getAllByRole('row')[1].querySelector('.eq-table__col-check.eq-table__col-primary')).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Columns' }))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: /Location/ }))
+    expect(primaryHeaders().map(h => h.textContent)).toEqual(['Work Order'])
+  })
+
+  it('flags selectable tables so the pinned column can offset past the checkbox', () => {
+    const { container } = render(
+      <Table rows={rows} columns={columns} getRowId={r => r.id} onDelete={() => {}} />
+    )
+    expect(container.querySelector('.eq-table-card')).toHaveAttribute('data-selectable', 'true')
+  })
+
+  it('tags hideOnMobile columns on both header and body cells', () => {
+    const cols: TableColumn<Row>[] = [...columns.slice(0, 2), { key: 'plan', header: 'Plan', hideOnMobile: true }]
+    const { container } = render(<Table rows={rows} columns={cols} getRowId={r => r.id} />)
+    const hidden = container.querySelectorAll('.eq-table__col--hide-mobile')
+    expect(hidden.length).toBe(1 + rows.length)
+    hidden.forEach(el => expect(el.textContent).toMatch(/Plan|E\d/))
+  })
+
+  it('renders a checkbox placeholder in skeleton rows when built-in actions enable selection', () => {
+    vi.useFakeTimers()
+    const { container } = render(
+      <Table rows={[]} columns={columns} getRowId={r => r.id} onDelete={() => {}} loading />
+    )
+    act(() => { vi.advanceTimersByTime(250) })
+    const skeletonRow = container.querySelector('tbody tr[aria-hidden="true"]')!
+    // header has checkbox + 3 data + chevron = 5 cells; skeleton rows must match.
+    expect(skeletonRow.children.length).toBe(5)
+    vi.useRealTimers()
+  })
+})
+
+describe('Table — selection a11y', () => {
+  it('gives the select-all and per-row checkboxes accessible names', () => {
+    render(<Table rows={rows} columns={columns} getRowId={r => r.id} selectable selectedIds={new Set()} />)
+    expect(screen.getByRole('checkbox', { name: 'Select all rows' })).toBeInTheDocument()
+    expect(screen.getAllByRole('checkbox', { name: 'Select row' })).toHaveLength(rows.length)
+  })
+})

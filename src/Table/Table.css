@@ -1004,6 +1004,222 @@
   }
 }
 
+/* ── Mobile (≤767px, same breakpoint as AppShell) ─────────────────────
+ *
+ * Without these rules a phone-width card squeezes every column until text
+ * wraps one word per line, and anything wider than the card is clipped by
+ * .eq-table-card's overflow:hidden. Two layouts, picked by the
+ * `mobileLayout` prop (rendered as data-mobile-layout on the card):
+ *   scroll (default) — no-wrap cells, horizontal scroll, pinned first column
+ *   cards            — each row stacks into a label/value card
+ * Everything here is scoped to this media query; desktop is untouched. */
+
+@media (max-width: 767px) {
+  /* Toolbar: let the right cluster wrap under the slicers instead of
+   * overflowing, with search taking the full first line. */
+  .eq-table-toolbar__right {
+    flex-wrap: wrap;
+    width: 100%;
+    margin-left: 0;
+  }
+  .eq-table-search {
+    flex: 1 1 100%;
+  }
+  .eq-table-search input {
+    width: 100%;
+  }
+
+  /* Bulk bar: scroll its actions rather than overflow the pill. */
+  .eq-table__bulk-bar {
+    overflow-x: auto;
+  }
+
+  .eq-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* !important: must beat the cards layout's per-cell display:flex/block. */
+  .eq-table .eq-table__col--hide-mobile {
+    display: none !important;
+  }
+
+  /* ── scroll ─────────────────────────────────────────────────────── */
+
+  /* Secondary cells keep one line (the row scrolls sideways instead); the
+   * primary column wraps, but at a readable minimum width rather than one
+   * word per line. */
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody td {
+    white-space: nowrap;
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table .eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table .eq-table__col-check {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table thead .eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table thead .eq-table__col-check {
+    z-index: 11; /* above both sticky body cells and the sticky header row */
+  }
+
+  /* Auto layout squeezes the checkbox column below its declared 46px once
+   * the table overflows, which would leave a see-through gap before the
+   * pinned primary column — hold it at exactly 46px. */
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table .eq-table__col-check {
+    box-sizing: border-box;
+    width: 46px;
+    min-width: 46px;
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"][data-selectable] .eq-table .eq-table__col-primary {
+    left: 46px; /* width of .eq-table__col-check */
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table .eq-table__col-primary {
+    border-right: 1px solid var(--eq-gray-200);
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody td.eq-table__col-primary {
+    white-space: normal;
+    min-width: 9rem;
+  }
+
+  /* Sticky body cells need an opaque fill that tracks the row state, or
+   * scrolled cells show through them. Header cells already have one. */
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody td.eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody td.eq-table__col-check {
+    background: var(--eq-white);
+    transition: background var(--eq-duration-default) var(--eq-ease);
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table[data-rows="zebra"] tbody tr:nth-child(even) > td.eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table[data-rows="zebra"] tbody tr:nth-child(even) > td.eq-table__col-check {
+    background: var(--eq-gray-50);
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr:hover > td.eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr:hover > td.eq-table__col-check {
+    background: var(--eq-ice);
+  }
+
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr.eq-table__row--selected > td.eq-table__col-primary,
+  .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr.eq-table__row--selected > td.eq-table__col-check {
+    background: var(--eq-selection-bg, #e1f1fb);
+  }
+
+  /* ── cards ──────────────────────────────────────────────────────── */
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table thead {
+    display: none;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table,
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody tr {
+    display: block;
+    position: relative;
+    padding: var(--eq-space-3) 0;
+    border-top: 1px solid var(--eq-gray-100);
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table[data-rows="zebra"] tbody tr,
+  .eq-table-card[data-mobile-layout="cards"] .eq-table[data-rows="plain"] tbody tr {
+    border-top: 0;
+  }
+
+  /* Every cell: "LABEL ········ value" on one line. text-align overrides the
+   * column's inline `align` style — in a card, values always sit right. */
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--eq-space-3);
+    width: auto !important;
+    padding: 3px 20px;
+    border-top: 0;
+    text-align: right !important;
+    overflow-wrap: anywhere;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: var(--eq-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--eq-grey);
+    text-align: left;
+  }
+
+  /* Primary column = card title, no label. */
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__col-primary {
+    display: block;
+    padding-bottom: var(--eq-space-1);
+    font-weight: 600;
+    text-align: left !important;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__col-primary::before {
+    content: none;
+  }
+
+  /* Checkbox sits top-left beside the title. */
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__col-check {
+    position: absolute;
+    top: var(--eq-space-3);
+    left: 20px;
+    padding: 2px 0 0;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__col-check::before {
+    content: none;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"][data-selectable] .eq-table tbody td.eq-table__col-primary {
+    padding-left: 50px;
+  }
+
+  /* Chevron: only on tappable rows, pinned right-centre of the card. */
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__col-chev {
+    display: none;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody tr[data-clickable="true"] td {
+    padding-right: 48px;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody tr[data-clickable="true"] td.eq-table__col-chev {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    padding: 0;
+    transform: translateY(-50%);
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody tr[data-clickable="true"] td.eq-table__col-chev::before {
+    content: none;
+  }
+
+  .eq-table-card[data-mobile-layout="cards"] .eq-table tbody td.eq-table__empty {
+    display: block;
+    padding: var(--eq-space-10) var(--eq-space-4);
+    text-align: center !important;
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .eq-table__bulk-bar {
