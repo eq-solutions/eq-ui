@@ -439,6 +439,7 @@ Generic over row type `T`.
 | `className` | `string` | CSS class on every `<td>` in this column |
 | `width` | `string \| number` | Fixed column width |
 | `align` | `'left' \| 'right' \| 'center'` | Text alignment. Defaults to `'left'` |
+| `hideOnMobile` | `boolean` | Hide this column below 768px (both mobile layouts). Desktop unaffected |
 
 #### Table props
 
@@ -457,6 +458,7 @@ Generic over row type `T`.
 | `onRowClick` | `(row: T) => void` | — | Row click callback |
 | `loading` | `boolean` | `false` | Render skeleton placeholder rows instead of data |
 | `loadingRows` | `number` | `5` | Number of skeleton rows while `loading` |
+| `mobileLayout` | `'scroll' \| 'cards'` | `'scroll'` | Below 768px: `'scroll'` keeps cells on one line, scrolls the table sideways and pins the first column (+ checkbox); `'cards'` stacks each row into a `label: value` card with the first column as its title (header row — sort, column filters, select-all — is hidden, so pair with `globalSearch`/`slicers`). Desktop is identical for both |
 
 #### Usage
 

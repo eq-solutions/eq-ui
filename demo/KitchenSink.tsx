@@ -66,6 +66,34 @@ const TABLE_COLUMNS: TableColumn<WorkOrderRow>[] = [
   },
 ]
 
+// Wider fixture for the mobile layouts — long auto-generated check names are
+// exactly what used to wrap one word per line on a phone.
+interface CheckRow {
+  id: string
+  ref: string
+  name: string
+  site: string
+  status: StatusKind
+  tests: string
+  due: string
+}
+
+const CHECK_ROWS: CheckRow[] = [
+  { id: 'c-1', ref: 'MC-2041', name: 'Private Hospital Client B 5 Year LVACB August 2026', site: 'Kogarah', status: 'open', tests: '0/14 complete', due: '14 Aug 2026' },
+  { id: 'c-2', ref: 'MC-2042', name: 'Data Centre Client A Quarterly RCD Testing', site: 'Macquarie Park', status: 'overdue', tests: '32/48 complete', due: '2 Aug 2026' },
+  { id: 'c-3', ref: 'MC-2043', name: 'Tier 1 Client NSX Annual Inspection', site: 'Alexandria', status: 'in-progress', tests: '5/9 complete', due: '21 Sep 2026' },
+  { id: 'c-4', ref: 'MC-2044', name: 'Switchroom thermal scan', site: 'Parramatta', status: 'closed', tests: '6/6 complete', due: '1 Jul 2026' },
+]
+
+const CHECK_COLUMNS: TableColumn<CheckRow>[] = [
+  { key: 'name', header: 'Check' },
+  { key: 'site', header: 'Site' },
+  { key: 'status', header: 'Status', render: (row) => <StatusBadge status={row.status} /> },
+  { key: 'tests', header: 'Tests' },
+  { key: 'due', header: 'Due' },
+  { key: 'ref', header: 'Ref', hideOnMobile: true },
+]
+
 const SIDEBAR_SECTIONS: AppSidebarSection[] = [
   {
     key: 'records',
@@ -102,6 +130,7 @@ export function KitchenSink() {
   const [tab, setTab] = useState('all')
   const [inputValue, setInputValue] = useState('')
   const [paginationPage, setPaginationPage] = useState(1)
+  const [tableSelected, setTableSelected] = useState<Set<string>>(new Set())
   const [msStatus, setMsStatus] = useState<string[]>(['overdue'])
   const [msSites, setMsSites] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null })
@@ -303,6 +332,34 @@ export function KitchenSink() {
 
       <Section title="Table">
         <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} />
+        <p className="ks-note">
+          Mobile — <code>mobileLayout=&quot;scroll&quot;</code> (default). Below 768px: cells
+          don&apos;t wrap, the table scrolls sideways, Check + checkbox stay pinned. Ref
+          is <code>hideOnMobile</code>.
+        </p>
+        <div data-testid="ks-table-scroll">
+          <Table
+            columns={CHECK_COLUMNS}
+            rows={CHECK_ROWS}
+            globalSearch
+            columnToggle
+            selectable
+            selectedIds={tableSelected}
+            onSelectionChange={setTableSelected}
+          />
+        </div>
+        <p className="ks-note">
+          Mobile — <code>mobileLayout=&quot;cards&quot;</code>. Below 768px each row stacks
+          into a tappable card.
+        </p>
+        <div data-testid="ks-table-cards">
+          <Table
+            columns={CHECK_COLUMNS}
+            rows={CHECK_ROWS}
+            mobileLayout="cards"
+            onRowClick={(row) => toast({ tone: 'ok', title: `Open ${row.ref}` })}
+          />
+        </div>
         <p className="ks-note">Loading state (SkeletonRows), rendered standalone below:</p>
         <table className="eq-table">
           <tbody>

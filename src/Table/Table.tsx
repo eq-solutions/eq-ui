@@ -41,6 +41,13 @@ export interface TableColumn<T> {
    * (see `filterValue`) so export isn't left blank.
    */
   exportValue?: (row: T) => string
+  /**
+   * Hide this column below the mobile breakpoint (767px) — in both the
+   * `'scroll'` and `'cards'` mobile layouts. Desktop rendering is unaffected.
+   * Use for secondary columns (IDs, timestamps) that aren't worth the
+   * horizontal space on a phone.
+   */
+  hideOnMobile?: boolean
 }
 
 // ── Slicer definition ──────────────────────────────────────────────────────
@@ -135,6 +142,21 @@ export interface TableProps<T> {
 
   /** Row separator style. Defaults to `'lines'`. */
   rowVariant?: 'lines' | 'zebra' | 'plain'
+
+  /**
+   * How the table renders below the mobile breakpoint (767px). Desktop
+   * rendering is identical for both.
+   *
+   * - `'scroll'` (default) — cells stop word-wrapping, the table scrolls
+   *   horizontally inside its card, and the first data column (plus the
+   *   selection checkbox) stays pinned on the left while scrolling.
+   * - `'cards'` — each row stacks into a card: the first data column is the
+   *   card title, every other column becomes a `header: value` line. The
+   *   header row (sorting, per-column filters, select-all) is hidden, so
+   *   pair this with `globalSearch` / `slicers` if the page needs filtering
+   *   on a phone. Best for list pages where rows are tapped to open a record.
+   */
+  mobileLayout?: 'scroll' | 'cards'
 
   /** Paginate the rows. Client-side: slices sorted rows. */
   pagination?: TablePagination
@@ -302,6 +324,7 @@ export function Table<T>({
   rowIndicator,
   density = 'comfortable',
   rowVariant = 'lines',
+  mobileLayout = 'scroll',
   pagination,
   summary,
   onDelete,
@@ -812,6 +835,18 @@ export function Table<T>({
 
   const wrapClass = ['eq-table-wrap', className].filter(Boolean).join(' ')
 
+  // Mobile hooks (all styling lives under the 767px media query in Table.css,
+  // so these classes are inert on desktop). The first visible data column is
+  // the row's identifier — pinned left in 'scroll', the card title in 'cards'.
+  const primaryKey = visibleCols[0]?.key
+  function cellClass(col: TableColumn<T>, ...extra: (string | undefined)[]) {
+    return [
+      ...extra,
+      col.key === primaryKey ? 'eq-table__col-primary' : '',
+      col.hideOnMobile ? 'eq-table__col--hide-mobile' : '',
+    ].filter(Boolean).join(' ') || undefined
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────
   return (
     <div className={wrapClass}>
@@ -955,7 +990,12 @@ export function Table<T>({
       )}
 
       {/* Card: table + footer + bulk bar */}
-      <div className="eq-table-card">
+      <div
+        className="eq-table-card"
+        data-mobile-layout={mobileLayout}
+        data-selectable={effectiveSelectable || undefined}
+      >
+        <div className="eq-table-scroll">
         <table
           className="eq-table"
           data-density={density}
@@ -975,6 +1015,7 @@ export function Table<T>({
                       ].filter(Boolean).join(' ')}
                       role="checkbox"
                       aria-checked={headState === 'on' ? true : headState === 'mixed' ? 'mixed' : false}
+                      aria-label="Select all rows"
                       tabIndex={0}
                       onClick={e => { e.stopPropagation(); toggleAll() }}
                       onKeyDown={e => {
@@ -1003,7 +1044,7 @@ export function Table<T>({
                   <th
                     key={col.key}
                     scope="col"
-                    className={isSortable ? 'eq-table__th--sortable' : ''}
+                    className={cellClass(col, isSortable ? 'eq-table__th--sortable' : undefined)}
                     data-sorted={isSorted || undefined}
                     style={{ width: col.width, textAlign: col.align ?? 'left' }}
                     onClick={isSortable ? () => toggleSort(col.key) : undefined}
@@ -1120,7 +1161,7 @@ export function Table<T>({
               <tr className="eq-table__filter-row">
                 {effectiveSelectable && <th className="eq-table__col-check" />}
                 {visibleCols.map(col => (
-                  <th key={`filter-${col.key}`} style={{ width: col.width }}>
+                  <th key={`filter-${col.key}`} className={cellClass(col)} style={{ width: col.width }}>
                     {col.filterable === 'text' && (
                       <input
                         type="text"
@@ -1155,9 +1196,9 @@ export function Table<T>({
             {showLoading ? (
               Array.from({ length: loadingRows }).map((_, rowIdx) => (
                 <tr key={`sk-${rowIdx}`} aria-hidden="true">
-                  {selectable && <td className="eq-table__col-check" />}
+                  {effectiveSelectable && <td className="eq-table__col-check" />}
                   {visibleCols.map((col, colIdx) => (
-                    <td key={col.key} style={{ textAlign: col.align ?? 'left', width: col.width }}>
+                    <td key={col.key} className={cellClass(col)} style={{ textAlign: col.align ?? 'left', width: col.width }}>
                       <Skeleton shape="text" width={colIdx === 0 ? '70%' : '50%'} />
                     </td>
                   ))}
@@ -1198,6 +1239,7 @@ export function Table<T>({
                             ].filter(Boolean).join(' ')}
                             role="checkbox"
                             aria-checked={isSelected}
+                            aria-label="Select row"
                             tabIndex={0}
                             onClick={e => { e.stopPropagation(); toggleRow(rowId) }}
                             onKeyDown={e => {
@@ -1212,11 +1254,11 @@ export function Table<T>({
 
                     {visibleCols.map((col, colIdx) => {
                       const indicator = colIdx === 0 && rowIndicator ? rowIndicator(row) : null
-                      const tdClass = ['eq-table__td', col.className].filter(Boolean).join(' ') || undefined
                       return (
                         <td
                           key={col.key}
-                          className={tdClass}
+                          className={cellClass(col, 'eq-table__td', col.className)}
+                          data-label={col.header}
                           style={{ textAlign: col.align ?? 'left', width: col.width }}
                         >
                           {colIdx === 0 && rowIndicator ? (
@@ -1255,6 +1297,7 @@ export function Table<T>({
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Zone G — Footer */}
         {showFooter && (
