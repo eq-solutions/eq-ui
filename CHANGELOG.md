@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.0
+
+### Minor Changes
+
+- 659c0df: Brand decisions: primary Button label is Ink on Sky (AA contrast); Button md/lg and FormInput value text move up one step (14px/15px); Table `headerTone` prop (`neutral` default, `brand` for Sky header) and label tracking token; Card `band` prop; new `StatCard`; StatusBadge gains `approved`, `pending`, `rejected`, `beta`, `new` tones and 0.05em tracking.
+
 ## 1.17.0
 
 ### Minor Changes
