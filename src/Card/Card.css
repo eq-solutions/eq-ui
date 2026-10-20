@@ -20,7 +20,7 @@
   justify-content: space-between;
   gap: var(--eq-space-3);
   padding: var(--eq-space-4) var(--eq-space-5);
-  border-bottom: var(--eq-border-width) solid var(--eq-border-light, var(--eq-gray-100));
+  border-bottom: var(--eq-border-width) solid var(--eq-border-light);
 }
 
 .eq-card__title {

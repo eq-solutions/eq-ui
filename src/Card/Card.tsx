@@ -18,9 +18,9 @@ export interface CardProps
 
 const BAND_VAR: Record<NonNullable<CardProps['band']>, string> = {
   sky: 'var(--eq-sky)',
-  success: 'var(--eq-success-dot, var(--eq-success-text))',
-  warning: 'var(--eq-warning-dot, var(--eq-warning-text))',
-  error: 'var(--eq-error-dot, var(--eq-error-text))',
+  success: 'var(--eq-success-dot)',
+  warning: 'var(--eq-warning-dot)',
+  error: 'var(--eq-error-dot)',
   grey: 'var(--eq-gray-400)',
 }
 
