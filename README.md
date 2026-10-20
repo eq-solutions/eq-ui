@@ -71,7 +71,7 @@ The EQ canonical button. Supports four variants, three sizes, a loading state, r
 
 | Variant | Use for |
 |---|---|
-| `primary` | Main CTA — filled `--eq-sky`, white label, hover to `--eq-deep` |
+| `primary` | Main CTA — filled `--eq-sky`, `--eq-ink` label (white on Sky is ~2.7:1, fails AA), hover to `--eq-deep` |
 | `secondary` | Secondary actions — white background, `--eq-deep` border + label, hover to `--eq-ice` |
 | `ghost` | Toolbar / nav actions — transparent background, `--eq-ink` label, hover to `--eq-ice` |
 | `danger` | Destructive confirmations — `--eq-error-bg` background, `--eq-error-text` border + label, hover fills red |
@@ -81,8 +81,8 @@ The EQ canonical button. Supports four variants, three sizes, a loading state, r
 | Size | Height | Side padding | Font size |
 |---|---|---|---|
 | `sm` | 32px | 12px | `--eq-text-xs` (11px) |
-| `md` | 40px | 16px | `--eq-text-sm` (12px) |
-| `lg` | 48px | 24px | `--eq-text-base` (14px) |
+| `md` | 40px | 16px | `--eq-text-base` (14px) |
+| `lg` | 48px | 24px | `--eq-text-md` (15px) |
 
 #### Usage
 
@@ -147,7 +147,7 @@ Lifecycle pill with a leading state dot. Status is for *state*, never brand — 
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `status` | `'open' \| 'in-progress' \| 'overdue' \| 'closed' \| 'await'` | — | Lifecycle state |
+| `status` | `'open' \| 'in-progress' \| 'overdue' \| 'closed' \| 'await' \| 'approved' \| 'pending' \| 'rejected' \| 'beta' \| 'new'` | — | Lifecycle state. `beta` (Ink) and `new` (Sky, Ink label) are brand tags with no state dot |
 | `label` | `string` | — | Override the default label text |
 | `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Pill padding |
 
@@ -192,6 +192,7 @@ Flat bordered surface (no shadow — only floating UI gets a shadow). Optional h
 | `title` | `ReactNode` | — | Header heading |
 | `actions` | `ReactNode` | — | Right-aligned header content (buttons, filters) |
 | `padding` | `'none' \| 'sm' \| 'md' \| 'lg'` | `'md'` | Body padding tier (`'none'` for edge-to-edge tables) |
+| `band` | `'sky' \| 'success' \| 'warning' \| 'error' \| 'grey'` | — | Colour-coded 5px left edge (Field site cards). A status device, not a decorative accent |
 | `...props` | `HTMLAttributes<HTMLDivElement>` (minus `title`) | — | Standard div attributes |
 
 ```tsx
@@ -203,6 +204,28 @@ import { Card, Button, Table } from '@eq-solutions/ui'
 
 // Edge-to-edge table
 <Card padding="none"><Table … /></Card>
+
+// Colour-coded site card
+<Card band="success" title="Wetherill Park">…</Card>
+```
+
+---
+
+### StatCard
+
+KPI tile — label, large value, optional delta.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `ReactNode` | — | Uppercase label above the value |
+| `value` | `ReactNode` | — | Headline figure |
+| `delta` | `ReactNode` | — | Change line, e.g. `▲ 2 vs last week` |
+| `tone` | `'ink' \| 'white'` | `'ink'` | `ink` = dark surface, Sky value; `white` = light surface, Ink value |
+
+```tsx
+import { StatCard } from '@eq-solutions/ui'
+
+<StatCard label="Active sites" value="14" delta="▲ 2 vs last week" tone="ink" />
 ```
 
 ---
@@ -424,6 +447,14 @@ import { Spinner } from '@eq-solutions/ui'
 Generic sortable data table. Supports filterable columns, row selection checkboxes, row-click navigation, per-row style overrides, and an empty state. All styling uses `--eq-*` CSS custom properties.
 
 Generic over row type `T`.
+
+#### Header tone
+
+`headerTone` — `'neutral'` (default) or `'brand'`. `brand` gives a Sky header with Ink text (sorted column flips to Deep with white text), used by Field and Service.
+
+```tsx
+<Table columns={cols} rows={rows} headerTone="brand" />
+```
 
 #### TableColumn definition
 

@@ -30,6 +30,8 @@ design system** and is banned.
 |-----------|-------|-------------|-------|
 | Spinner hand-port | `eq-field/styles/spinner.css` | eq-field can import `@eq-solutions/ui` Spinner (or drop the local spinner styles once Field consumes the package) | |
 
+Lucide is the icon standard for all apps. The Field Spinner hand-port stays until Field adopts the package.
+
 Owners are filled in by humans; the kill condition is what matters for scoring.
 
 When changing a component that has a known hand-port, call it out in the
