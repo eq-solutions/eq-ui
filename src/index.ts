@@ -26,6 +26,10 @@ export type { KindPillProps, WorkKind } from './KindPill/KindPill'
 export { Card } from './Card/Card'
 export type { CardProps } from './Card/Card'
 
+// StatCard
+export { StatCard } from './StatCard/StatCard'
+export type { StatCardProps } from './StatCard/StatCard'
+
 // Modal / ConfirmDialog
 export { Modal } from './Modal/Modal'
 export type { ModalProps } from './Modal/Modal'

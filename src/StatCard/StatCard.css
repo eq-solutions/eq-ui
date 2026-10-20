@@ -1,0 +1,43 @@
+/*
+ * @eq-solutions/ui — StatCard
+ *
+ * All colours, radii, spacing reference --eq-* custom properties from
+ * @eq-solutions/tokens. No hardcoded hex values.
+ */
+
+.eq-stat {
+  padding: var(--eq-space-5);
+  border-radius: var(--eq-radius-shell);
+  font-family: var(--eq-font-stack);
+}
+
+.eq-stat--ink { background-color: var(--eq-ink); color: var(--eq-white); }
+.eq-stat--white {
+  background-color: var(--eq-white);
+  color: var(--eq-ink);
+  border: var(--eq-border-width) solid var(--eq-border-color);
+}
+
+.eq-stat__label {
+  font-size: var(--eq-label-size);
+  font-weight: var(--eq-label-weight);
+  letter-spacing: var(--eq-tracking-label);
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.eq-stat__value {
+  margin-top: var(--eq-space-2);
+  font-size: var(--eq-text-3xl);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: var(--eq-tracking-tighter);
+}
+.eq-stat--ink .eq-stat__value { color: var(--eq-sky); }
+.eq-stat--white .eq-stat__value { color: var(--eq-ink); }
+
+.eq-stat__delta {
+  margin-top: var(--eq-space-2);
+  font-size: var(--eq-text-sm);
+  opacity: 0.8;
+}

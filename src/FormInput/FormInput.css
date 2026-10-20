@@ -26,7 +26,7 @@
   border: var(--eq-border-width) solid var(--eq-input-border-color);
   border-radius: var(--eq-radius-input);
   font-family: inherit;
-  font-size: var(--eq-text-sm);
+  font-size: var(--eq-text-base);
   color: var(--eq-ink);
   background-color: var(--eq-white);
   outline: none;

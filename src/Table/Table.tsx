@@ -140,6 +140,9 @@ export interface TableProps<T> {
   /** Row height. Defaults to `'comfortable'`. */
   density?: 'comfortable' | 'compact'
 
+  /** Header style. `'brand'` gives a Sky header (Field, Service). Defaults to `'neutral'`. */
+  headerTone?: 'neutral' | 'brand'
+
   /** Row separator style. Defaults to `'lines'`. */
   rowVariant?: 'lines' | 'zebra' | 'plain'
 
@@ -323,6 +326,7 @@ export function Table<T>({
   bulkActions,
   rowIndicator,
   density = 'comfortable',
+  headerTone = 'neutral',
   rowVariant = 'lines',
   mobileLayout = 'scroll',
   pagination,
@@ -993,6 +997,7 @@ export function Table<T>({
       <div
         className="eq-table-card"
         data-mobile-layout={mobileLayout}
+        data-header-tone={headerTone}
         data-selectable={effectiveSelectable || undefined}
       >
         <div className="eq-table-scroll">
