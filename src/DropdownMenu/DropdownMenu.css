@@ -75,7 +75,7 @@
 
 .eq-dropdown__sep {
   height: 1px;
-  background: var(--eq-border-light, var(--eq-gray-100));
+  background: var(--eq-border-light);
   margin: 4px 0;
 }
 

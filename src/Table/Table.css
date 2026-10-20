@@ -88,13 +88,13 @@
 
 .eq-table-slicer--active .eq-table-slicer__count,
 .eq-table-slicer[aria-pressed="true"] .eq-table-slicer__count {
-  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha on var(--eq-sky) slicer pill */
+  background: var(--eq-on-ink-active);
   color: var(--eq-white);
 }
 
 .eq-table-slicer--active:hover,
 .eq-table-slicer[aria-pressed="true"]:hover {
-  background: #11111f; /* token-guard-allow: active-slicer hover — darker than --eq-ink, no token exists */
+  background: var(--eq-ink-hover);
 }
 
 /* Toolbar right cluster */
@@ -630,11 +630,11 @@
 }
 
 .eq-table tbody tr.eq-table__row--selected {
-  background: var(--eq-selection-bg, #e1f1fb);
+  background: var(--eq-selection-bg);
 }
 
 .eq-table tbody tr.eq-table__row--selected:hover {
-  background: var(--eq-selection-bg-hover, #d5ecf8);
+  background: var(--eq-selection-bg-hover);
 }
 
 /* Density */
@@ -656,7 +656,7 @@
   background: var(--eq-ice);
 }
 .eq-table[data-rows="zebra"] tbody tr.eq-table__row--selected {
-  background: var(--eq-selection-bg, #e1f1fb);
+  background: var(--eq-selection-bg);
 }
 .eq-table[data-rows="zebra"] tbody td {
   border-top: 0;
@@ -853,7 +853,7 @@
 .eq-table__bulk-vr {
   width: 1px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha divider on var(--eq-ink) bulk bar */
+  background: var(--eq-on-ink-active);
   flex-shrink: 0;
 }
 
@@ -887,12 +887,12 @@
 }
 
 .eq-table__bulk-act:hover {
-  background: rgba(255, 255, 255, 0.1); /* token-guard-allow: white alpha hover on var(--eq-ink) bulk bar */
+  background: var(--eq-on-ink-hover);
   color: var(--eq-white);
 }
 
 .eq-table__bulk-act--danger:hover {
-  background: rgba(185, 28, 28, 0.92); /* token-guard-allow: danger red on dark bulk bar — no --eq-error token at this opacity */
+  background: var(--eq-error-solid);
   color: var(--eq-white);
 }
 
@@ -902,7 +902,7 @@
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.08); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
-  color: rgba(255, 255, 255, 0.7); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
+  color: var(--eq-on-ink-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -912,7 +912,7 @@
 }
 
 .eq-table__bulk-close:hover {
-  background: rgba(255, 255, 255, 0.16); /* token-guard-allow: white alpha on var(--eq-ink) bulk bar */
+  background: var(--eq-on-ink-active);
   color: var(--eq-white);
 }
 
@@ -1107,7 +1107,7 @@
 
   .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr.eq-table__row--selected > td.eq-table__col-primary,
   .eq-table-card[data-mobile-layout="scroll"] .eq-table tbody tr.eq-table__row--selected > td.eq-table__col-check {
-    background: var(--eq-selection-bg, #e1f1fb);
+    background: var(--eq-selection-bg);
   }
 
   /* ── cards ──────────────────────────────────────────────────────── */

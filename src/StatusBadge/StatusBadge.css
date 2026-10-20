@@ -69,11 +69,11 @@
 
 /* approved / pending / rejected — status palette, 600-shade dots */
 .eq-badge--approved { background-color: var(--eq-success-bg); color: var(--eq-success-text); }
-.eq-badge--approved .eq-badge__dot { background-color: var(--eq-success-dot, var(--eq-success-text)); }
+.eq-badge--approved .eq-badge__dot { background-color: var(--eq-success-dot); }
 .eq-badge--pending { background-color: var(--eq-warning-bg); color: var(--eq-warning-text); }
-.eq-badge--pending .eq-badge__dot { background-color: var(--eq-warning-dot, var(--eq-warning-text)); }
+.eq-badge--pending .eq-badge__dot { background-color: var(--eq-warning-dot); }
 .eq-badge--rejected { background-color: var(--eq-error-bg); color: var(--eq-error-text); }
-.eq-badge--rejected .eq-badge__dot { background-color: var(--eq-error-dot, var(--eq-error-text)); }
+.eq-badge--rejected .eq-badge__dot { background-color: var(--eq-error-dot); }
 
 /* beta / new — brand tags, no state dot */
 .eq-badge--beta { background-color: var(--eq-ink); color: var(--eq-white); }
