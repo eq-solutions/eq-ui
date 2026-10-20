@@ -4,6 +4,7 @@ import { Button } from '../src/Button/Button'
 import { FormInput } from '../src/FormInput/FormInput'
 import { StatusBadge, type StatusKind } from '../src/StatusBadge/StatusBadge'
 import { KindPill, type WorkKind } from '../src/KindPill/KindPill'
+import { StatCard } from '../src/StatCard/StatCard'
 import { Card } from '../src/Card/Card'
 import { Modal } from '../src/Modal/Modal'
 import { ConfirmDialog } from '../src/Modal/ConfirmDialog'
@@ -22,7 +23,7 @@ import { MultiSelect } from '../src/MultiSelect/MultiSelect'
 
 const VARIANTS = ['primary', 'secondary', 'ghost', 'danger'] as const
 const SIZES = ['sm', 'md', 'lg'] as const
-const STATUSES: StatusKind[] = ['open', 'in-progress', 'overdue', 'closed', 'await']
+const STATUSES: StatusKind[] = ['open', 'in-progress', 'overdue', 'closed', 'await', 'approved', 'pending', 'rejected', 'beta', 'new']
 const KINDS: WorkKind[] = ['preventive', 'corrective', 'inspection']
 const SPINNER_VARIANTS: SpinnerVariant[] = ['bars', 'ring', 'dots', 'trail']
 
@@ -219,11 +220,19 @@ export function KitchenSink() {
         </Row>
       </Section>
 
+      <Section title="StatCard">
+        <Row>
+          <StatCard label="Active sites" value="14" delta="▲ 2 vs last week" tone="ink" />
+          <StatCard label="Open jobs" value="38" tone="white" />
+        </Row>
+      </Section>
+
       <Section title="Card">
         <Row>
           <Card title="Work orders" actions={<Button size="sm">New</Button>}>
             Plain card body with a header + action.
           </Card>
+          <Card band="success" title="Wetherill Park">Band card (success).</Card>
           <Card padding="none">
             <div style={{ padding: 16 }}>Edge-to-edge card (padding=&quot;none&quot;).</div>
           </Card>
@@ -332,6 +341,9 @@ export function KitchenSink() {
 
       <Section title="Table">
         <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} />
+        <div style={{ marginTop: 16 }}>
+          <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} headerTone="brand" />
+        </div>
         <p className="ks-note">
           Mobile — <code>mobileLayout=&quot;scroll&quot;</code> (default). Below 768px: cells
           don&apos;t wrap, the table scrolls sideways, Check + checkbox stay pinned. Ref

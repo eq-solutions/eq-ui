@@ -7,6 +7,11 @@ export type StatusKind =
   | 'overdue'
   | 'closed'
   | 'await'
+  | 'approved'
+  | 'pending'
+  | 'rejected'
+  | 'beta'
+  | 'new'
 
 const LABELS: Record<StatusKind, string> = {
   open: 'Open',
@@ -14,6 +19,11 @@ const LABELS: Record<StatusKind, string> = {
   overdue: 'Overdue',
   closed: 'Closed',
   await: 'Awaiting',
+  approved: 'Approved',
+  pending: 'Pending',
+  rejected: 'Rejected',
+  beta: 'Beta',
+  new: 'New',
 }
 
 export interface StatusBadgeProps

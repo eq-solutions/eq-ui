@@ -14,7 +14,7 @@
   font-family: var(--eq-font-stack);
   font-size: var(--eq-text-xs);
   font-weight: var(--eq-weight-bold);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -66,3 +66,17 @@
   padding: 2px var(--eq-space-2);
   gap: var(--eq-space-1);
 }
+
+/* approved / pending / rejected — status palette, 600-shade dots */
+.eq-badge--approved { background-color: var(--eq-success-bg); color: var(--eq-success-text); }
+.eq-badge--approved .eq-badge__dot { background-color: var(--eq-success-dot, var(--eq-success-text)); }
+.eq-badge--pending { background-color: var(--eq-warning-bg); color: var(--eq-warning-text); }
+.eq-badge--pending .eq-badge__dot { background-color: var(--eq-warning-dot, var(--eq-warning-text)); }
+.eq-badge--rejected { background-color: var(--eq-error-bg); color: var(--eq-error-text); }
+.eq-badge--rejected .eq-badge__dot { background-color: var(--eq-error-dot, var(--eq-error-text)); }
+
+/* beta / new — brand tags, no state dot */
+.eq-badge--beta { background-color: var(--eq-ink); color: var(--eq-white); }
+.eq-badge--new { background-color: var(--eq-sky); color: var(--eq-ink); }
+.eq-badge--beta .eq-badge__dot,
+.eq-badge--new .eq-badge__dot { display: none; }
