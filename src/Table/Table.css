@@ -97,6 +97,70 @@
   background: var(--eq-ink-hover);
 }
 
+/* Grouped slicers — one dropdown per group */
+
+.eq-table-slicer-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-sm);
+  font-weight: 600;
+  color: var(--eq-grey);
+  white-space: nowrap;
+}
+
+.eq-table-slicer-group__select {
+  height: 34px;
+  padding: 0 var(--eq-space-3);
+  border-radius: var(--eq-radius-input);
+  border: 1px solid var(--eq-gray-200);
+  background: var(--eq-white);
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-sm);
+  font-weight: 600;
+  color: var(--eq-ink);
+  cursor: pointer;
+  transition: border-color var(--eq-duration-default) var(--eq-ease);
+}
+
+.eq-table-slicer-group__select:hover {
+  border-color: var(--eq-gray-300);
+}
+
+.eq-table-slicer-group__select:focus {
+  outline: none;
+  border-color: var(--eq-deep);
+  box-shadow: var(--eq-focus-ring);
+}
+
+/* "N of M shown" + Clear filters */
+
+.eq-table-count {
+  font-size: var(--eq-text-sm);
+  color: var(--eq-grey);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.eq-table-clearbtn {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--eq-font-stack);
+  font-size: var(--eq-text-sm);
+  font-weight: 600;
+  color: var(--eq-deep);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.eq-table-clearbtn:hover {
+  color: var(--eq-ink);
+  text-decoration: underline;
+}
+
 /* Toolbar right cluster */
 
 .eq-table-toolbar__right {

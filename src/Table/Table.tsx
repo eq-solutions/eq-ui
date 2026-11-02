@@ -59,6 +59,13 @@ export interface TableSlicer<T> {
   filter?: (row: T) => boolean
   /** CSS colour value for the status dot (e.g. `var(--eq-error-text)`). */
   dot?: string
+  /**
+   * Slicers sharing a `group` render together as one labelled dropdown
+   * (single choice, "All" clears it) instead of chips. Groups combine with
+   * each other and with ungrouped chip slicers by AND. Ungrouped slicers
+   * behave exactly as before. Group selection is uncontrolled.
+   */
+  group?: string
 }
 
 // ── Pagination ─────────────────────────────────────────────────────────────
@@ -77,7 +84,7 @@ export interface TableProps<T> {
   rows: T[]
   getRowId?: (row: T) => string
   defaultSort?: { key: string; dir?: 'asc' | 'desc' }
-  emptyMessage?: string
+  emptyMessage?: React.ReactNode
   className?: string
   rowStyle?: (row: T) => React.CSSProperties | undefined
   selectable?: boolean
@@ -107,6 +114,41 @@ export interface TableProps<T> {
 
   /** Show a global search input in the toolbar. Pass `true` for defaults or an object to set placeholder. */
   globalSearch?: boolean | { placeholder?: string }
+
+  /**
+   * Extra text the built-in search matches per row, so search can span fields
+   * that aren't visible columns. Matched in addition to the column values.
+   */
+  searchText?: (row: T) => string
+
+  /**
+   * Controlled search text. When passed, Table filters by it and keeps no
+   * search state of its own (even if `globalSearch` is off, so a parent can
+   * render its own input). Pair with `onQueryChange`.
+   */
+  query?: string
+  /** Fires when the built-in search input changes or is cleared. */
+  onQueryChange?: (query: string) => void
+
+  /**
+   * Controlled hidden column keys. When passed, overrides
+   * `defaultHiddenColumns` and `persistKey` visibility handling (column order
+   * is still persisted via `persistKey`). Pair with `onHiddenColumnsChange`.
+   */
+  hiddenColumns?: string[]
+  /** Fires with the next hidden column keys when the Columns popover toggles one. */
+  onHiddenColumnsChange?: (hidden: string[]) => void
+
+  /** Content rendered in the toolbar row, after the slicers. */
+  toolbar?: React.ReactNode
+  /** Content rendered at the end of the toolbar's right-hand cluster. */
+  toolbarEnd?: React.ReactNode
+
+  /**
+   * While any search/filter is active (and the toolbar is shown), render an
+   * "N of M shown" count and a "Clear filters" button. Default true.
+   */
+  showClearFilters?: boolean
 
   /** Show a Columns toggle button that opens a popover to show/hide columns. */
   columnToggle?: boolean
@@ -319,6 +361,14 @@ export function Table<T>({
   onSlicerChange,
   multiSlicer = false,
   globalSearch = false,
+  searchText,
+  query: queryProp,
+  onQueryChange,
+  hiddenColumns: hiddenColumnsProp,
+  onHiddenColumnsChange,
+  toolbar,
+  toolbarEnd,
+  showClearFilters = true,
   columnToggle = false,
   defaultHiddenColumns,
   persistKey,
@@ -426,7 +476,16 @@ export function Table<T>({
   }, [openFilterMenu])
 
   // ── Slicer ─────────────────────────────────────────────────────────────
-  const defaultSlicerKey = slicers?.[0]?.key ?? 'all'
+  const chipSlicers = useMemo(() => slicers?.filter(s => !s.group), [slicers])
+  const slicerGroups = useMemo(() => {
+    const groups = new Map<string, TableSlicer<T>[]>()
+    for (const s of slicers ?? []) {
+      if (!s.group) continue
+      groups.set(s.group, [...(groups.get(s.group) ?? []), s])
+    }
+    return groups
+  }, [slicers])
+  const defaultSlicerKey = chipSlicers?.[0]?.key ?? 'all'
   const [internalSlicer, setInternalSlicer] = useState(defaultSlicerKey)
   const activeSlicer = controlledSlicer ?? internalSlicer
 
@@ -454,6 +513,17 @@ export function Table<T>({
     })
   }
 
+  // Grouped slicers: one choice per group, uncontrolled. Absent = "All".
+  const [groupSelection, setGroupSelection] = useState<Record<string, string>>({})
+  function handleGroupChange(group: string, key: string) {
+    setGroupSelection(prev => {
+      const next = { ...prev }
+      if (key === '') delete next[group]
+      else next[group] = key
+      return next
+    })
+  }
+
   const slicerCounts = useMemo(() => {
     const counts: Record<string, number> = {}
     if (slicers) {
@@ -465,14 +535,20 @@ export function Table<T>({
   }, [slicers, rows])
 
   // ── Global search ──────────────────────────────────────────────────────
-  const [query, setQuery] = useState('')
+  const [internalQuery, setInternalQuery] = useState('')
+  const query = queryProp ?? internalQuery
+  function setQuery(value: string) {
+    if (queryProp === undefined) setInternalQuery(value)
+    onQueryChange?.(value)
+  }
   const searchPlaceholder =
     globalSearch === true || globalSearch === false
       ? 'Search…'
       : (globalSearch.placeholder ?? 'Search…')
 
   // ── Column visibility ──────────────────────────────────────────────────
-  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
+  const [internalHiddenCols, setHiddenCols] = useState<Set<string>>(() => {
+    if (hiddenColumnsProp) return new Set<string>()
     if (persistKey) {
       try {
         const stored = window.localStorage.getItem(`eq-table-hidden-cols:${persistKey}`)
@@ -538,20 +614,25 @@ export function Table<T>({
     }
   }, [colsMenuOpen])
 
+  const hiddenCols = useMemo(
+    () => (hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHiddenCols),
+    [hiddenColumnsProp, internalHiddenCols],
+  )
+
   function toggleCol(key: string) {
-    setHiddenCols(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      if (persistKey) {
-        try {
-          window.localStorage.setItem(`eq-table-hidden-cols:${persistKey}`, JSON.stringify([...next]))
-        } catch {
-          // localStorage unavailable — visibility still works for this session
-        }
+    const next = new Set(hiddenCols)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    onHiddenColumnsChange?.([...next])
+    if (hiddenColumnsProp) return
+    if (persistKey) {
+      try {
+        window.localStorage.setItem(`eq-table-hidden-cols:${persistKey}`, JSON.stringify([...next]))
+      } catch {
+        // localStorage unavailable — visibility still works for this session
       }
-      return next
-    })
+    }
+    setHiddenCols(next)
   }
 
   // ── Column order ─────────────────────────────────────────────────────
@@ -629,12 +710,19 @@ export function Table<T>({
       if (s?.filter && !s.filter(row)) return false
     }
 
+    if (slicers) {
+      for (const key of Object.values(groupSelection)) {
+        const s = slicers.find(s => s.key === key)
+        if (s?.filter && !s.filter(row)) return false
+      }
+    }
+
     if (query.trim()) {
       const q = query.toLowerCase()
       const matches = columns.some(col => {
         const val = col.filterValue ? col.filterValue(row) : (row as Record<string, unknown>)[col.key]
         return val != null && String(val).toLowerCase().includes(q)
-      })
+      }) || (!!searchText && searchText(row).toLowerCase().includes(q))
       if (!matches) return false
     }
 
@@ -661,7 +749,7 @@ export function Table<T>({
     }
 
     return true
-  }, [slicers, activeSlicer, multiSlicer, activeSlicerSet, query, filters, multiFilters, columns])
+  }, [slicers, activeSlicer, multiSlicer, activeSlicerSet, groupSelection, query, searchText, filters, multiFilters, columns])
 
   const autoSelectOptions = useMemo(() => {
     const opts: Record<string, { value: string; label: string }[]> = {}
@@ -709,7 +797,7 @@ export function Table<T>({
   const totalCount = pagination?.totalCount ?? sortedRows.length
   const totalPages = pagination ? Math.max(1, Math.ceil(sortedRows.length / pageSize)) : 1
 
-  useEffect(() => { setPage(1) }, [query, activeSlicer, activeSlicerSet, filters, multiFilters])
+  useEffect(() => { setPage(1) }, [query, activeSlicer, activeSlicerSet, groupSelection, filters, multiFilters])
 
   const pagedRows = useMemo(() => {
     if (!pagination) return sortedRows
@@ -833,9 +921,26 @@ export function Table<T>({
   }, [summary, pagination, pagedRows.length, sortedRows.length, totalCount, page, pageSize])
 
   // ── Toolbar visibility ─────────────────────────────────────────────────
-  const hasToolbar = !!(slicers || globalSearch || columnToggle || exportable)
+  const hasToolbar = !!(slicers || globalSearch || columnToggle || exportable || toolbar || toolbarEnd)
   const showFooter = !!(summaryNode || (pagination && totalPages > 1))
-  const activeFilterCount = Object.keys(filters).length + Object.keys(multiFilters).length + (query ? 1 : 0)
+  const activeFilterCount =
+    Object.keys(filters).length + Object.keys(multiFilters).length +
+    Object.keys(groupSelection).length + (query ? 1 : 0)
+  // A chip slicer other than the default counts as an active filter for the
+  // "Clear filters" affordance only (not for the empty-state copy).
+  const chipSlicerActive = !!slicers && (multiSlicer ? activeSlicerSet.size > 0 : activeSlicer !== defaultSlicerKey)
+  const filtersActive = activeFilterCount > 0 || chipSlicerActive
+
+  function clearFilters() {
+    setFilters({})
+    setMultiFilters({})
+    setGroupSelection({})
+    setQuery('')
+    if (slicers) {
+      if (multiSlicer) setActiveSlicerSet(new Set())
+      else handleSlicerChange(defaultSlicerKey)
+    }
+  }
 
   const wrapClass = ['eq-table-wrap', className].filter(Boolean).join(' ')
 
@@ -860,7 +965,7 @@ export function Table<T>({
         <div className="eq-table-toolbar">
           {slicers && slicers.length > 0 && (
             <div className="eq-table-slicers" role="group" aria-label="Quick filters">
-              {slicers.map(s => {
+              {chipSlicers!.map(s => {
                 const isActive = multiSlicer
                   ? (s.filter ? activeSlicerSet.has(s.key) : activeSlicerSet.size === 0)
                   : activeSlicer === s.key
@@ -881,10 +986,39 @@ export function Table<T>({
                   </button>
                 )
               })}
+              {Array.from(slicerGroups, ([group, items]) => (
+                <div key={group} className="eq-table-slicer-group">
+                  <span className="eq-table-slicer-group__label" aria-hidden="true">{group}</span>
+                  <select
+                    className="eq-table-slicer-group__select"
+                    aria-label={group}
+                    value={groupSelection[group] ?? ''}
+                    onChange={e => handleGroupChange(group, e.target.value)}
+                  >
+                    <option value="">All</option>
+                    {items.map(s => (
+                      <option key={s.key} value={s.key}>{s.label} ({slicerCounts[s.key] ?? 0})</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
             </div>
           )}
 
+          {toolbar}
+
           <div className="eq-table-toolbar__right">
+            {showClearFilters && filtersActive && (
+              <>
+                <span className="eq-table-count" role="status">
+                  {filteredRows.length} of {rows.length} shown
+                </span>
+                <button type="button" className="eq-table-clearbtn" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              </>
+            )}
+
             {globalSearch && (
               <div className="eq-table-search">
                 <Search size={16} aria-hidden="true" />
@@ -989,6 +1123,8 @@ export function Table<T>({
                 Export
               </button>
             )}
+
+            {toolbarEnd}
           </div>
         </div>
       )}
