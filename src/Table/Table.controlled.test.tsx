@@ -222,14 +222,14 @@ describe('Table — emptyMessage', () => {
 
 describe('Table — shown count and Clear filters', () => {
   it('is hidden while nothing is filtered', () => {
-    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch slicers={slicers} />)
+    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch slicers={slicers} showClearFilters />)
     expect(screen.queryByRole('status')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull()
   })
 
   it('shows "N of M shown" and clears search, groups and chips (uncontrolled)', async () => {
     const user = userEvent.setup()
-    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch slicers={slicers} />)
+    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch slicers={slicers} showClearFilters />)
 
     await user.type(search(), 'o')
     await user.selectOptions(screen.getByRole('combobox', { name: 'Department' }), 'eng')
@@ -247,7 +247,7 @@ describe('Table — shown count and Clear filters', () => {
   it('counts a controlled query and clears it through onQueryChange', async () => {
     const user = userEvent.setup()
     const onQueryChange = vi.fn()
-    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch query="ann" onQueryChange={onQueryChange} />)
+    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch query="ann" onQueryChange={onQueryChange} showClearFilters />)
     expect(screen.getByRole('status')).toHaveTextContent('1 of 3 shown')
     await user.click(screen.getByRole('button', { name: 'Clear filters' }))
     expect(onQueryChange).toHaveBeenCalledWith('')
@@ -259,16 +259,16 @@ describe('Table — shown count and Clear filters', () => {
     render(
       <Table
         rows={people} columns={columns} getRowId={getId}
-        slicers={slicers} activeSlicer="mine" onSlicerChange={onSlicerChange}
+        slicers={slicers} activeSlicer="mine" onSlicerChange={onSlicerChange} showClearFilters
       />
     )
     await user.click(screen.getByRole('button', { name: 'Clear filters' }))
     expect(onSlicerChange).toHaveBeenCalledWith('all')
   })
 
-  it('opts out with showClearFilters={false}', async () => {
+  it('is off by default and when showClearFilters={false}', async () => {
     const user = userEvent.setup()
-    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch showClearFilters={false} />)
+    render(<Table rows={people} columns={columns} getRowId={getId} globalSearch />)
     await user.type(search(), 'ann')
     expect(screen.queryByRole('status')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull()

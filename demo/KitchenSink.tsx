@@ -368,6 +368,7 @@ export function KitchenSink() {
             query={tableQuery}
             onQueryChange={setTableQuery}
             searchText={(r) => r.kind}
+            showClearFilters
             toolbarEnd={<span className="ks-note">Search: &quot;{tableQuery}&quot;</span>}
             emptyMessage={<em>No work orders yet.</em>}
           />

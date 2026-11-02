@@ -145,8 +145,8 @@ export interface TableProps<T> {
   toolbarEnd?: React.ReactNode
 
   /**
-   * While any search/filter is active (and the toolbar is shown), render an
-   * "N of M shown" count and a "Clear filters" button. Default true.
+   * Opt in: while any search/filter is active (and the toolbar is shown), render an
+   * "N of M shown" count and a "Clear filters" button. Default false.
    */
   showClearFilters?: boolean
 
@@ -368,7 +368,7 @@ export function Table<T>({
   onHiddenColumnsChange,
   toolbar,
   toolbarEnd,
-  showClearFilters = true,
+  showClearFilters = false,
   columnToggle = false,
   defaultHiddenColumns,
   persistKey,
