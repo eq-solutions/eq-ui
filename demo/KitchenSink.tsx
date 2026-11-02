@@ -16,6 +16,7 @@ import { Table, type TableColumn } from '../src/Table/Table'
 import { DropdownMenu } from '../src/DropdownMenu/DropdownMenu'
 import { AppSidebar, type AppSidebarSection } from '../src/AppShell/index'
 import { Tooltip } from '../src/Tooltip/Tooltip'
+import { DisclosureStrip } from '../src/DisclosureStrip/DisclosureStrip'
 import { EmptyState } from '../src/EmptyState/EmptyState'
 import { Pagination } from '../src/Pagination/Pagination'
 import { DateRangePicker, type DateRange } from '../src/DateRangePicker/DateRangePicker'
@@ -427,6 +428,15 @@ export function KitchenSink() {
           onPageChange={setPaginationPage}
           density="compact"
         />
+      </Section>
+
+      <Section title="DisclosureStrip">
+        <DisclosureStrip title="Needs attention" count={3}>
+          <p>Three people have licences expiring this month.</p>
+        </DisclosureStrip>
+        <DisclosureStrip title="Heads up" tone="info" defaultOpen>
+          <p>Roster changes publish at 5pm.</p>
+        </DisclosureStrip>
       </Section>
 
       <Section title="EmptyState">

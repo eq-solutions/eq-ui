@@ -1,0 +1,67 @@
+/*
+ * @eq-solutions/ui — DisclosureStrip
+ *
+ * Flat — no gradient, no shadow. Colours, spacing, radii reference --eq-*
+ * custom properties from @eq-solutions/tokens. No hardcoded hex values.
+ * The 5px vertical padding and 11.5px label size are deliberate parity with
+ * the existing Shell "Needs attention" row (no token at those values).
+ */
+
+.eq-disclosure-strip {
+  background-color: var(--eq-white);
+  border-bottom: var(--eq-border-width) solid var(--eq-border-color);
+  font-family: var(--eq-font-stack);
+  color: var(--eq-gray-500);
+}
+
+.eq-disclosure-strip__header {
+  display: flex;
+  align-items: center;
+  gap: var(--eq-space-2);
+  width: 100%;
+  margin: 0;
+  padding: 5px var(--eq-space-6);
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 11.5px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.eq-disclosure-strip__header:focus-visible {
+  outline: 2px solid var(--eq-sky);
+  outline-offset: -2px;
+}
+
+.eq-disclosure-strip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.eq-disclosure-strip--attention .eq-disclosure-strip__dot { background-color: var(--eq-warning-dot); }
+.eq-disclosure-strip--info .eq-disclosure-strip__dot { background-color: var(--eq-sky); }
+
+.eq-disclosure-strip__title {
+  font-weight: var(--eq-weight-bold);
+  color: var(--eq-ink);
+}
+
+.eq-disclosure-strip__chevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  transition: transform 150ms ease;
+}
+.eq-disclosure-strip[data-open="true"] .eq-disclosure-strip__chevron { transform: rotate(180deg); }
+
+.eq-disclosure-strip__panel {
+  padding: var(--eq-space-2) var(--eq-space-6) var(--eq-space-3);
+  color: var(--eq-ink);
+}
+.eq-disclosure-strip__panel[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-disclosure-strip__chevron { transition: none; }
+}
