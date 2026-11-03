@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.20.0
+
+### Minor Changes
+
+- bda1bdb: Add `DisclosureStrip` — a one-line, collapsible strip (amber/sky dot, bold title, count, chevron) that expands to reveal a list. Uncontrolled via `defaultOpen`, or controlled via `open` + `onOpenChange`. Additive; no existing component changes.
+- 126b530: DropdownMenu: items gain optional `hint`, `checked` (menuitemcheckbox) and `keepOpen`. Adds ArrowUp/ArrowDown/Home/End navigation and returns focus to the trigger on Escape and item select.
+- 04a7ac3: Table: toolbar can now be driven from outside, all additive. `searchText` extends built-in search to fields that aren't columns; `query` / `onQueryChange` control the search text; `hiddenColumns` / `onHiddenColumnsChange` control column visibility (overrides `defaultHiddenColumns` and `persistKey` visibility); `TableSlicer.group` turns same-group slicers into one single-choice dropdown, combined by AND; `toolbar` / `toolbarEnd` slots; `emptyMessage` accepts a ReactNode.
+
+  New opt-in `showClearFilters`: when a toolbar is shown and a search/filter is active, Table renders an "N of M shown" count and a "Clear filters" button. Off by default, so existing tables look the same.
+
 ## 1.19.0
 
 ### Minor Changes
