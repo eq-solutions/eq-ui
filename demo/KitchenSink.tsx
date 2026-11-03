@@ -133,6 +133,7 @@ export function KitchenSink() {
   const [inputValue, setInputValue] = useState('')
   const [paginationPage, setPaginationPage] = useState(1)
   const [tableSelected, setTableSelected] = useState<Set<string>>(new Set())
+  const [tableQuery, setTableQuery] = useState('')
   const [msStatus, setMsStatus] = useState<string[]>(['overdue'])
   const [msSites, setMsSites] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null })
@@ -344,6 +345,34 @@ export function KitchenSink() {
         <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} />
         <div style={{ marginTop: 16 }}>
           <Table columns={TABLE_COLUMNS} rows={TABLE_ROWS} headerTone="brand" />
+        </div>
+        <p className="ks-note">
+          Grouped filters + controlled search — slicers sharing a <code>group</code> become one
+          dropdown (&quot;All&quot; clears it), <code>query</code> is owned by the page, and{' '}
+          <code>searchText</code> lets search match the kind even though it&apos;s not a column.
+          Filter to see &quot;N of M shown&quot; and Clear filters.
+        </p>
+        <div data-testid="ks-table-grouped">
+          <Table
+            columns={TABLE_COLUMNS}
+            rows={TABLE_ROWS}
+            slicers={[
+              { key: 'all', label: 'All' },
+              { key: 'open', label: 'Open', group: 'Status', filter: (r) => r.status === 'open' },
+              { key: 'overdue', label: 'Overdue', group: 'Status', filter: (r) => r.status === 'overdue' },
+              { key: 'closed', label: 'Closed', group: 'Status', filter: (r) => r.status === 'closed' },
+              { key: 'preventive', label: 'Preventive', group: 'Kind', filter: (r) => r.kind === 'preventive' },
+              { key: 'corrective', label: 'Corrective', group: 'Kind', filter: (r) => r.kind === 'corrective' },
+              { key: 'inspection', label: 'Inspection', group: 'Kind', filter: (r) => r.kind === 'inspection' },
+            ]}
+            globalSearch
+            query={tableQuery}
+            onQueryChange={setTableQuery}
+            searchText={(r) => r.kind}
+            showClearFilters
+            toolbarEnd={<span className="ks-note">Search: &quot;{tableQuery}&quot;</span>}
+            emptyMessage={<em>No work orders yet.</em>}
+          />
         </div>
         <p className="ks-note">
           Mobile — <code>mobileLayout=&quot;scroll&quot;</code> (default). Below 768px: cells
