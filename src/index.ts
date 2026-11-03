@@ -72,6 +72,10 @@ export type {
 export { DropdownMenu } from './DropdownMenu/DropdownMenu'
 export type { DropdownMenuProps, DropdownMenuEntry, DropdownMenuItemDef, DropdownMenuSeparatorDef } from './DropdownMenu/DropdownMenu'
 
+// DisclosureStrip
+export { DisclosureStrip } from './DisclosureStrip/DisclosureStrip'
+export type { DisclosureStripProps } from './DisclosureStrip/DisclosureStrip'
+
 // EmptyState
 export { EmptyState } from './EmptyState/EmptyState'
 export type { EmptyStateProps } from './EmptyState/EmptyState'
