@@ -103,4 +103,108 @@ describe('DropdownMenu', () => {
     )
     expect(container.querySelector('.eq-dropdown')).toHaveAttribute('data-density', 'compact')
   })
+
+  it('renders a hint and announces it as the item description', async () => {
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu
+        trigger={<button aria-label="More">⋯</button>}
+        items={[{ key: 'pack', label: 'Compliance pack', hint: 'PDF of all licences', onClick: vi.fn() }]}
+      />
+    )
+    await user.click(screen.getByLabelText('More'))
+    expect(screen.getByText('PDF of all licences')).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /Compliance pack/ })).toHaveAccessibleDescription(
+      'PDF of all licences'
+    )
+  })
+
+  it('uses menuitemcheckbox with aria-checked when checked is defined', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <DropdownMenu
+        trigger={<button aria-label="More">⋯</button>}
+        items={[
+          { key: 'a', label: 'Name', checked: true, onClick: vi.fn() },
+          { key: 'b', label: 'Phone', checked: false, onClick: vi.fn() },
+          { key: 'c', label: 'Plain', onClick: vi.fn() },
+        ]}
+      />
+    )
+    await user.click(screen.getByLabelText('More'))
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Name' })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Phone' })).toHaveAttribute('aria-checked', 'false')
+    expect(screen.getByRole('menuitem', { name: 'Plain' })).not.toHaveAttribute('aria-checked')
+
+    rerender(
+      <DropdownMenu
+        trigger={<button aria-label="More">⋯</button>}
+        items={[{ key: 'b', label: 'Phone', checked: true, onClick: vi.fn() }]}
+      />
+    )
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Phone' })).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('keepOpen runs onClick and leaves the menu open', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(
+      <DropdownMenu
+        trigger={<button aria-label="More">⋯</button>}
+        items={[{ key: 'a', label: 'Name', checked: false, keepOpen: true, onClick }]}
+      />
+    )
+    await user.click(screen.getByLabelText('More'))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: 'Name' }))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: 'Name' }))
+    expect(onClick).toHaveBeenCalledTimes(2)
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+  })
+
+  it('supports arrow/Home/End navigation, skipping disabled items', async () => {
+    const user = userEvent.setup()
+    renderMenu()
+    screen.getByLabelText('More').focus()
+    await user.keyboard('{ArrowDown}')
+    expect(screen.getByRole('menuitem', { name: 'Duplicate' })).toHaveFocus()
+    await user.keyboard('{ArrowDown}')
+    expect(screen.getByRole('menuitem', { name: 'Move to trash' })).toHaveFocus()
+    await user.keyboard('{ArrowDown}') // Locked action is disabled → wraps to first
+    expect(screen.getByRole('menuitem', { name: 'Duplicate' })).toHaveFocus()
+    await user.keyboard('{ArrowUp}')
+    expect(screen.getByRole('menuitem', { name: 'Move to trash' })).toHaveFocus()
+    await user.keyboard('{Home}')
+    expect(screen.getByRole('menuitem', { name: 'Duplicate' })).toHaveFocus()
+    await user.keyboard('{End}')
+    expect(screen.getByRole('menuitem', { name: 'Move to trash' })).toHaveFocus()
+  })
+
+  it('returns focus to the trigger on Escape and on item select', async () => {
+    const user = userEvent.setup()
+    renderMenu()
+    const trigger = screen.getByLabelText('More')
+    await user.click(trigger)
+    await user.keyboard('{ArrowDown}{Escape}')
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+
+    await user.click(trigger)
+    await user.click(screen.getByText('Duplicate'))
+    expect(trigger).toHaveFocus()
+  })
+
+  it('keeps danger styling with hint, checked and keepOpen, and has no axe violations', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <DropdownMenu
+        trigger={<button aria-label="More">⋯</button>}
+        items={[
+          { key: 'a', label: 'Remove', hint: 'Cannot be undone', checked: true, keepOpen: true, variant: 'danger', onClick: vi.fn() },
+        ]}
+      />
+    )
+    await user.click(screen.getByLabelText('More'))
+    expect(screen.getByRole('menuitemcheckbox')).toHaveClass('eq-dropdown__item--danger')
+    expect((await axe(container)).violations).toEqual([])
+  })
 })
