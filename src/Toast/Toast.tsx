@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import { createPortal } from 'react-dom'
 import './Toast.css'
@@ -39,6 +40,8 @@ interface ToastContextValue {
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null)
+
+const subscribeNever = () => () => {}
 
 /**
  * Access the toast API. Must be rendered under a `<ToastProvider>`.
@@ -95,6 +98,13 @@ const DEFAULT_ICONS: Record<ToastTone, React.ReactNode> = {
  */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastRecord[]>([])
+  // The region is portalled into document.body, which only exists in the
+  // browser. Gating on `typeof document` made the server render nothing but the
+  // first client render draw the region, so every SSR'd page hydrated with a
+  // mismatch (React error #418). Render it only after mount instead, so the
+  // first client render matches the server. (useSyncExternalStore returns the
+  // server snapshot, false, while hydrating, then true on the client.)
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false)
   const seq = useRef(0)
   const timers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
 
@@ -134,7 +144,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast, dismiss }}>
       {children}
-      {typeof document !== 'undefined' &&
+      {mounted &&
         createPortal(
           <div className="eq-toast__region" role="region" aria-live="polite" aria-label="Notifications">
             {toasts.map((t) => {

@@ -102,3 +102,41 @@ describe('Toast', () => {
     expect(results.violations).toEqual([])
   })
 })
+
+describe('Toast hydration', () => {
+  it('server-renders without the notifications region (it is portalled after mount)', async () => {
+    const { renderToString } = await import('react-dom/server')
+    const html = renderToString(
+      <ToastProvider>
+        <p>page</p>
+      </ToastProvider>
+    )
+    expect(html).toContain('page')
+    expect(html).not.toContain('eq-toast__region')
+  })
+
+  it('hydrates server HTML without a mismatch, then adds the region', async () => {
+    const { renderToString } = await import('react-dom/server')
+    const { hydrateRoot } = await import('react-dom/client')
+    const ui = (
+      <ToastProvider>
+        <p>page</p>
+      </ToastProvider>
+    )
+    const container = document.createElement('div')
+    container.innerHTML = renderToString(ui)
+    document.body.appendChild(container)
+
+    const errors: unknown[] = []
+    let root!: ReturnType<typeof hydrateRoot>
+    await act(async () => {
+      root = hydrateRoot(container, ui, { onRecoverableError: (e) => errors.push(e) })
+    })
+
+    expect(errors).toEqual([])
+    expect(document.querySelector('.eq-toast__region')).not.toBeNull()
+
+    await act(async () => root.unmount())
+    container.remove()
+  })
+})
