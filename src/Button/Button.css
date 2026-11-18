@@ -71,16 +71,18 @@
 
 /* ── Variants ── */
 
-/* primary — filled sky, ink label (white on Sky is ~2.7:1; Ink on Sky ~6.5:1) */
+/* primary — Deep Blue fill, white label (brand rule 2026-11-18: Sky + white
+   only for bold labels >= 14pt/~19px; every button size here is smaller, so
+   Deep Blue it is — white on Deep is 4.6:1). Hover goes to Ink. */
 .eq-btn--primary {
-  background-color: var(--eq-sky);
-  border-color: var(--eq-sky);
-  color: var(--eq-ink);
+  background-color: var(--eq-deep);
+  border-color: var(--eq-deep);
+  color: var(--eq-white);
 }
 
 .eq-btn--primary:hover:not(:disabled):not([aria-busy="true"]) {
-  background-color: var(--eq-deep);
-  border-color: var(--eq-deep);
+  background-color: var(--eq-ink);
+  border-color: var(--eq-ink);
 }
 
 /* secondary — white with deep border + label */
