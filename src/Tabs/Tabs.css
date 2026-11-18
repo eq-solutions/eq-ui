@@ -35,7 +35,7 @@
 }
 
 .eq-tabs__tab:focus-visible {
-  outline: 2px solid var(--eq-sky);
+  outline: 2px solid var(--eq-deep);
   outline-offset: -2px;
   border-radius: var(--eq-radius-chip);
 }

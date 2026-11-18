@@ -53,7 +53,7 @@
 }
 
 .eq-dropdown__item:focus-visible {
-  outline: 2px solid var(--eq-focus-ring);
+  outline: 2px solid var(--eq-deep);
   outline-offset: var(--eq-focus-offset, -2px);
 }
 

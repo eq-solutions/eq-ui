@@ -123,7 +123,7 @@
 }
 
 .eq-hub-sidebar__collapse:focus-visible {
-  outline: 2px solid var(--eq-focus-ring);
+  outline: 2px solid var(--eq-deep);
   outline-offset: var(--eq-focus-offset);
 }
 
@@ -224,7 +224,7 @@
 }
 
 .eq-hub-sidebar__nav-item:focus-visible {
-  outline: 2px solid var(--eq-focus-ring);
+  outline: 2px solid var(--eq-deep);
   outline-offset: -2px;
 }
 
@@ -375,7 +375,7 @@
 
 .eq-hub-sidebar__user-logout:focus-visible,
 .eq-hub-sidebar__density-toggle:focus-visible {
-  outline: 2px solid var(--eq-focus-ring);
+  outline: 2px solid var(--eq-deep);
   outline-offset: var(--eq-focus-offset);
 }
 
@@ -410,7 +410,7 @@
 }
 
 .eq-hub-hamburger:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--eq-sky) 40%, transparent);
+  outline: 2px solid var(--eq-deep);
   outline-offset: 2px;
 }
 
@@ -463,7 +463,7 @@
 }
 
 .eq-hub-drawer__close:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--eq-sky) 40%, transparent);
+  outline: 2px solid var(--eq-deep);
   outline-offset: 2px;
 }
 
@@ -555,7 +555,7 @@
 }
 
 .eq-icon-rail__logo:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--eq-sky) 40%, transparent);
+  outline: 2px solid var(--eq-deep);
   outline-offset: -2px;
 }
 
@@ -605,7 +605,7 @@
 }
 
 .eq-icon-rail__item:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--eq-sky) 40%, transparent);
+  outline: 2px solid var(--eq-deep);
   outline-offset: -2px;
 }
 
@@ -701,7 +701,7 @@
 }
 
 .eq-icon-rail__user:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--eq-sky) 40%, transparent);
+  outline: 2px solid var(--eq-deep);
   outline-offset: -2px;
 }
 
