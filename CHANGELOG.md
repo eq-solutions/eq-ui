@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.20.2
+
+### Patch Changes
+
+- 568163b: Bump `@eq-solutions/tokens` to 1.6.0 (solid 2px Deep Blue keyboard focus). Focus outlines in AppShell, DropdownMenu, DisclosureStrip, Toast and Tabs now use `--eq-deep` instead of an invalid `--eq-focus-ring` colour, Sky, or a 40% Sky glow. No other colours changed.
+
 ## 1.20.1
 
 ### Patch Changes
